@@ -1,0 +1,12 @@
+package internal
+
+// ////////////////////////////
+// LOGGING CONSTANTS
+// ////////////////////////////
+const LOG_FILE = "logs/backend.log"
+
+//////////////////////////////
+// SERVER CONSTANTS
+// ////////////////////////////
+const SERVER_HOST = "127.0.0.1"
+const SERVER_PORT = "3000"

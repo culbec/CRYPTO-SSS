@@ -1,10 +1,13 @@
 package strings
 
-
+// Echo: returns the string.
+// Returns the string.
 func Echo(s string) string {
     return s
 }
 
+// Reverse: reverses the string.
+// Returns the reversed string.
 func Reverse(s string) string {
     rev := []rune(s)
     
