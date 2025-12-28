@@ -40,14 +40,14 @@ func NewArgon2idHash(time, memory uint32, threads uint8, keyLen, saltLen uint32)
 // secret: generates a random secret.
 // Returns the secret and an error if the secret generation fails.
 func secret(len uint32) ([]byte, error) {
-	secret_ := make([]byte, len)
+	secretBytes := make([]byte, len)
 
-	_, err := rand.Read(secret_)
+	_, err := rand.Read(secretBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	return secret_, nil
+	return secretBytes, nil
 }
 
 // GenerateHash: generates a hash for a given password and salt.
@@ -75,7 +75,7 @@ func (a *Argon2idHash) ComparePasswords(password, salt, hash []byte) error {
 	}
 
 	if !bytes.Equal(hash, hashSalt.Hash) {
-		return errors.New("passwords do not match")
+		return errors.New("authentication failed: password verification failed")
 	}
 
 	return nil

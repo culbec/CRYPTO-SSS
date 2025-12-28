@@ -87,7 +87,12 @@ func main() {
 		logger.Error("Error preparing the DB client", "error", err)
 	} else {
 		logger.Info("DB client prepared!")
-		defer mongo.Cleanup(client)
+		defer func() {
+			err := mongo.Cleanup(ctx, client)
+			if err != nil {
+				logger.Error("Error cleaning up the DB client", "error", err)
+			}
+		}()
 	}
 
 	logger.Info("Preparing the handlers...")

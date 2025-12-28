@@ -30,15 +30,14 @@ type ClientConfig struct {
 
 // Client: struct to hold the client connection and environment variables
 type Client struct {
-	ctx      context.Context
 	dbClient *mongo.Client
 	config   *ClientConfig
 }
 
 // QueryCollection: queries a named collection in the database based on some conditions.
 // Returns an HTTP status code and an error.
-func (client *Client) QueryCollection(collectionName string, conditions *bson.D, opts *options.FindOptions, results any) (int, error) {
-	logger := logging.FromContext(client.ctx)
+func (client *Client) QueryCollection(ctx context.Context, collectionName string, conditions *bson.D, opts *options.FindOptions, results any) (int, error) {
+	logger := logging.FromContext(ctx)
 
 	// Accessing the collection
 	collection := client.dbClient.Database(client.config.DbName).Collection(collectionName)
@@ -49,7 +48,7 @@ func (client *Client) QueryCollection(collectionName string, conditions *bson.D,
 	}
 
 	// Querying the collection
-	cursor, err := collection.Find(client.ctx, conditions, opts)
+	cursor, err := collection.Find(ctx, conditions, opts)
 
 	if err != nil {
 		logger.Error("Error querying the collection", "error", err.Error())
@@ -61,10 +60,10 @@ func (client *Client) QueryCollection(collectionName string, conditions *bson.D,
 		if err != nil {
 			logger.Error("Error closing the cursor", "error", err.Error())
 		}
-	}(cursor, client.ctx)
+	}(cursor, ctx)
 
 	// Decoding directly into a generic result
-	if err = cursor.All(client.ctx, results); err != nil {
+	if err = cursor.All(ctx, results); err != nil {
 		logger.Error("Error decoding the results", "error", err.Error())
 		return http.StatusInternalServerError, err
 	}
@@ -81,8 +80,8 @@ func (client *Client) QueryCollection(collectionName string, conditions *bson.D,
 
 // InsertDocument: inserts a new document into the named collection. The conditions parameter is used to check for uniqueness.
 // Returns the ID of the inserted document, HTTP status code, and an error
-func (client *Client) InsertDocument(collectionName string, conditions *bson.D, document any) (any, int, error) {
-	logger := logging.FromContext(client.ctx)
+func (client *Client) InsertDocument(ctx context.Context, collectionName string, conditions *bson.D, document any) (any, int, error) {
+	logger := logging.FromContext(ctx)
 
 	collection := client.dbClient.Database(client.config.DbName).Collection(collectionName)
 	logger.Info("Accessed collection", "collection", collection.Name())
@@ -90,7 +89,7 @@ func (client *Client) InsertDocument(collectionName string, conditions *bson.D, 
 	// Checking the insertion conditions
 	// Mainly checking for uniqueness of the document
 	if conditions != nil {
-		cursor, err := collection.Find(client.ctx, conditions)
+		cursor, err := collection.Find(ctx, conditions)
 
 		if err != nil {
 			logger.Error("Error querying the collection", "error", err.Error())
@@ -102,15 +101,15 @@ func (client *Client) InsertDocument(collectionName string, conditions *bson.D, 
 			if err != nil {
 				logger.Error("Error closing the cursor", "error", err.Error())
 			}
-		}(cursor, client.ctx)
+		}(cursor, ctx)
 
-		if cursor.Next(client.ctx) {
+		if cursor.Next(ctx) {
 			logger.Info("Document already exists in the collection")
 			return nil, http.StatusConflict, errors.New("document already exists in the collection")
 		}
 	}
 
-	insertResult, err := collection.InsertOne(client.ctx, document)
+	insertResult, err := collection.InsertOne(ctx, document)
 
 	if err != nil {
 		logger.Error("Error inserting the document", "error", err.Error())
@@ -118,18 +117,25 @@ func (client *Client) InsertDocument(collectionName string, conditions *bson.D, 
 	}
 
 	logger.Info("Inserted document", "id", insertResult.InsertedID)
-	return insertResult.InsertedID.(primitive.ObjectID), http.StatusCreated, nil
+
+	insertedID, ok := insertResult.InsertedID.(primitive.ObjectID)
+	if !ok {
+		logger.Error("Error converting the inserted ID to an ObjectID", "id", insertResult.InsertedID, "error", errors.New("invalid inserted ID type"))
+		return nil, http.StatusInternalServerError, errors.New("invalid inserted ID type")
+	}
+
+	return insertedID, http.StatusCreated, nil
 }
 
 // DeleteDocument: deletes a document from the named collection based on the conditions provided.
 // Returns the HTTP status code and an error.
-func (client *Client) DeleteDocument(collectionName string, conditions *bson.D) (int, error) {
-	logger := logging.FromContext(client.ctx)
+func (client *Client) DeleteDocument(ctx context.Context, collectionName string, conditions *bson.D) (int, error) {
+	logger := logging.FromContext(ctx)
 
 	collection := client.dbClient.Database(client.config.DbName).Collection(collectionName)
 	logger.Info("Accessed collection", "collection", collection.Name())
 
-	deletedResult, err := collection.DeleteOne(client.ctx, conditions)
+	deletedResult, err := collection.DeleteOne(ctx, conditions)
 
 	if err != nil {
 		logger.Error("Error deleting the document", "error", err.Error())
@@ -147,13 +153,13 @@ func (client *Client) DeleteDocument(collectionName string, conditions *bson.D) 
 
 // EditDocument: replaces a document in the named collection based on the conditions provided.
 // Returns the HTTP status code and an error.
-func (client *Client) EditDocument(collectionName string, conditions *bson.D, document any) (int, error) {
-	logger := logging.FromContext(client.ctx)
+func (client *Client) EditDocument(ctx context.Context, collectionName string, conditions *bson.D, document any) (int, error) {
+	logger := logging.FromContext(ctx)
 
 	collection := client.dbClient.Database(client.config.DbName).Collection(collectionName)
 	logger.Info("Accessed collection", "collection", collection.Name())
 
-	replaceResult, err := collection.ReplaceOne(client.ctx, conditions, document)
+	replaceResult, err := collection.ReplaceOne(ctx, conditions, document)
 
 	if err != nil {
 		logger.Error("Error updating the document", "error", err.Error())
@@ -206,7 +212,6 @@ func PrepareClient(ctx context.Context, config *config.Config) (*Client, error) 
 	}
 
 	return &Client{
-		ctx:      ctx,
 		dbClient: client,
 		config: &ClientConfig{
 			DbURI:  config.DbURI,
@@ -217,12 +222,12 @@ func PrepareClient(ctx context.Context, config *config.Config) (*Client, error) 
 
 // Cleanup: cleans up the client connection.
 // Returns an error if the connection fails.
-func Cleanup(client *Client) {
-	logger := logging.FromContext(client.ctx)
+func Cleanup(ctx context.Context, client *Client) error {
+	logger := logging.FromContext(ctx)
 
-	if err := client.dbClient.Disconnect(client.ctx); err != nil {
+	if err := client.dbClient.Disconnect(ctx); err != nil {
 		logger.Error("Error disconnecting from the server", "error", err.Error())
-		// Note: Consider returning error instead of panicking for better error handling
-		panic(err)
+		return err
 	}
+	return nil
 }
