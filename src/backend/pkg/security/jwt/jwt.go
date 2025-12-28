@@ -56,5 +56,15 @@ func (m *JWTManager) ValidateToken(token string) (string, error) {
 		return "", jwt.ErrInvalidKey
 	}
 
-	return claims["username"].(string), nil
+	usernameClaim, ok := claims["username"]
+	if !ok {
+		return "", jwt.ErrInvalidKey
+	}
+
+	username, ok := usernameClaim.(string)
+	if !ok {
+		return "", jwt.ErrInvalidType
+	}
+
+	return username, nil
 }

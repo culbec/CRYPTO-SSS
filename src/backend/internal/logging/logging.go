@@ -29,6 +29,11 @@ func InitLogger(logPath string) *slog.Logger {
 	mutex.Lock()
 	defer mutex.Unlock()
 
+	// Check if already initialized to prevent race conditions
+	if defaultLogger != nil {
+		return defaultLogger
+	}
+
 	// Console handler
 	// Default if file creation is not possible
 	consoleHandler := slog.NewTextHandler(os.Stdout, nil)
@@ -104,7 +109,9 @@ func CloseLogger() {
 	defer mutex.Unlock()
 
 	if logFile != nil {
-		logFile.Close()
+		if err := logFile.Close(); err != nil {
+			log.Printf("Failed to close log file: %v", err)
+		}
 		logFile = nil
 	}
 }
