@@ -1,0 +1,7 @@
+{
+    "db_uri": "mongodb://localhost:27017/?maxPoolSize=20&w=majority",
+    "db_name": "cryptosss",
+    "jwt_secret_key": "366cbee35aa6a3756855f0989fe9775ca1ddab9d767ce1beb49e5a30b84bef826e588e2cb6aa0ba6a62b5337fc53706fa87b2927cafbe23d9c2c1074fca1c794",
+    "server_host": "127.0.0.1",
+    "server_port": "3000"
+}
