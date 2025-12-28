@@ -19,7 +19,7 @@ func TestLoadConfig_ValidConfig(t *testing.T) {
 		"db_name":        "testdb",
 		"jwt_secret_key": "test-secret-key",
 		"server_host":    "127.0.0.1",
-		"server_port":    3000,
+		"server_port":    "3000",
 	}
 
 	configJSON, err := json.Marshal(validConfig)
