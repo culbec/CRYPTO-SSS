@@ -41,3 +41,4 @@ logs/
 
 # Configurations
 config.local.json
+HF_TOKEN

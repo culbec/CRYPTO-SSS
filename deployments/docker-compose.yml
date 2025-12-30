@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: src/backend/deployments/Dockerfile
+      secrets:
+        - hf_token
+    container_name: crypto-sss-backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    volumes:
+      - backend_logs:/app/logs
+    secrets:
+      - hf_token
+
+  mongo:
+    image: mongo:latest
+    container_name: crypto-sss-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+  backend_logs:
+
+secrets:
+  hf_token:
+    file: ./HF_TOKEN

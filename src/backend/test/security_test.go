@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	constants "github.com/culbec/CRYPTO-sss/src/backend/pkg"
+	constants "github.com/culbec/CRYPTO-sss/src/backend/internal"
 	"github.com/culbec/CRYPTO-sss/src/backend/pkg/security"
 )
 

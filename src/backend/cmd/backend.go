@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/culbec/CRYPTO-sss/src/backend/internal"
+	"github.com/culbec/CRYPTO-sss/src/backend/internal/api/auth"
 	"github.com/culbec/CRYPTO-sss/src/backend/internal/logging"
 	"github.com/culbec/CRYPTO-sss/src/backend/pkg"
 	"github.com/culbec/CRYPTO-sss/src/backend/pkg/mongo"
@@ -32,6 +33,38 @@ func corsMiddleware() gin.HandlerFunc {
 	}
 }
 
+func prepareAuthHandlers(router *gin.Engine, auth *auth.AuthHandler) []*gin.RouterGroup {
+	router.POST("/api/auth/login", func(ctx *gin.Context) {
+		ctx.Header("Content-Type", "application/json")
+		auth.Login(ctx)
+	})
+	router.POST("/api/auth/register", func(ctx *gin.Context) {
+		ctx.Header("Content-Type", "application/json")
+		auth.Register(ctx)
+	})
+	router.POST("/api/auth/logout", func(ctx *gin.Context) {
+		ctx.Header("Content-Type", "application/json")
+		auth.Logout(ctx)
+	})
+
+	router.POST("/api/auth/validate", func(ctx *gin.Context) {
+		logger := logging.FromContext(ctx)
+
+		_, err := auth.ValidateToken(ctx)
+		if err != nil {
+			msg := "error validating token: " + err.Error()
+			logger.Error(msg)
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": "Valid token"})
+	})
+
+	// TODO: protected routes
+	return []*gin.RouterGroup{}
+}
+
 func prepareHandlers(router *gin.Engine, ctx context.Context, config *pkg.Config, client *mongo.Client) {
 	logger := logging.FromContext(ctx)
 
@@ -46,6 +79,11 @@ func prepareHandlers(router *gin.Engine, ctx context.Context, config *pkg.Config
 		ctx.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 
+	// API handlers
+	authHandler := auth.NewAuthHandler(client, []byte(secretKey))
+
+	// TODO: protected routes
+	_ = prepareAuthHandlers(router, authHandler)
 }
 
 func main() {
