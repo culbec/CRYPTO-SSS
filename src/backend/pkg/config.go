@@ -5,6 +5,8 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+
+	constants "github.com/culbec/CRYPTO-sss/src/backend/internal"
 )
 
 // Config: struct to hold the configuration.
@@ -21,14 +23,14 @@ type Config struct {
 // Prefers the local config over the global config.
 // Returns the config file path and an error if the file is not found.
 func chooseConfigFile() (string, error) {
-	configPathLocal, err := filepath.Abs(CONFIG_FILE_LOCAL)
+	configPathLocal, err := filepath.Abs(constants.CONFIG_FILE_LOCAL)
 	if err == nil {
 		if _, err := os.Stat(configPathLocal); err == nil {
 			return configPathLocal, nil
 		}
 	}
 
-	configPath, err := filepath.Abs(CONFIG_FILE)
+	configPath, err := filepath.Abs(constants.CONFIG_FILE)
 	if err == nil {
 		if _, err := os.Stat(configPath); err == nil {
 			return configPath, nil

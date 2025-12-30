@@ -34,6 +34,16 @@ type Client struct {
 	config   *ClientConfig
 }
 
+type DbCollectionType int
+
+const (
+	UserCollection DbCollectionType = iota
+)
+
+var DbCollections = map[DbCollectionType]string{
+	UserCollection: "users",
+}
+
 // QueryCollection: queries a named collection in the database based on some conditions.
 // Returns an HTTP status code and an error.
 func (client *Client) QueryCollection(ctx context.Context, collectionName string, conditions *bson.D, opts *options.FindOptions, results any) (int, error) {

@@ -4,7 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type ObjectId primitive.ObjectID
+type ObjectId = primitive.ObjectID
 
 // User struct
 type User struct {
