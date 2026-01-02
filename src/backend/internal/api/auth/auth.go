@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/hex"
 	"errors"
 	"net/http"
 	"strings"
@@ -38,16 +39,32 @@ func newTokenManager() *tokenManager {
 	}
 }
 
-func (t *tokenManager) addToBlacklist(token string) {
+func (t *tokenManager) addToBlacklistUntil(token string, expiresAt time.Time) {
 	t.blacklistMutex.Lock()
 	defer t.blacklistMutex.Unlock()
-	t.tokenBlacklist[token] = time.Now()
+	t.tokenBlacklist[token] = expiresAt
 }
 
 func (t *tokenManager) isBlacklisted(token string) bool {
+	now := time.Now()
+
 	t.blacklistMutex.RLock()
-	defer t.blacklistMutex.RUnlock()
-	return t.tokenBlacklist[token].After(time.Now())
+	exp, ok := t.tokenBlacklist[token]
+	t.blacklistMutex.RUnlock()
+	if !ok {
+		return false
+	}
+
+	// blacklisted while token is not yet expired
+	if now.Before(exp) {
+		return true
+	}
+
+	// opportunistic cleanup
+	t.blacklistMutex.Lock()
+	delete(t.tokenBlacklist, token)
+	t.blacklistMutex.Unlock()
+	return false
 }
 
 func NewAuthHandler(db *mongo.Client, secretKey []byte) *AuthHandler {
@@ -79,7 +96,7 @@ func (a *AuthHandler) GetTokenManager() *tokenManager {
 }
 
 func (a *AuthHandler) ValidateToken(ctx *gin.Context) (string, error) {
-	logger := logging.FromContext(ctx)
+	logger := logging.FromContext(ctx.Request.Context())
 
 	token := ctx.GetHeader("Authorization")
 	if token == "" {
@@ -105,7 +122,7 @@ func (a *AuthHandler) ValidateToken(ctx *gin.Context) (string, error) {
 		return "", errors.New(msg)
 	}
 
-	username, err := a.jwtManager.ValidateToken(token)
+	username, _, err := a.jwtManager.ValidateToken(token)
 	if err != nil {
 		msg := "invalid authorization token: " + err.Error()
 		logger.Error(msg)
@@ -118,7 +135,7 @@ func (a *AuthHandler) ValidateToken(ctx *gin.Context) (string, error) {
 }
 
 func (a *AuthHandler) Login(ctx *gin.Context) error {
-	logger := logging.FromContext(ctx)
+	logger := logging.FromContext(ctx.Request.Context())
 
 	var req types.LoginRequest
 
@@ -131,7 +148,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) error {
 
 	var user []types.User
 	if status, err := a.db.QueryCollection(
-		ctx,
+		ctx.Request.Context(),
 		mongo.DbCollections[mongo.UserCollection],
 		&bson.D{{Key: "username", Value: req.Username}},
 		nil,
@@ -150,9 +167,15 @@ func (a *AuthHandler) Login(ctx *gin.Context) error {
 		return errors.New(msg)
 	}
 
+	saltBytes, decodeErr := hex.DecodeString(user[0].Salt)
+	if decodeErr != nil {
+		// Backward compatibility with previously stored raw-string salts.
+		saltBytes = []byte(user[0].Salt)
+	}
+
 	err := a.hasher.ComparePasswords(
 		[]byte(req.Password),
-		[]byte(user[0].Salt),
+		saltBytes,
 		[]byte(user[0].Password),
 	)
 	if err != nil {
@@ -178,7 +201,7 @@ func (a *AuthHandler) Login(ctx *gin.Context) error {
 }
 
 func (a *AuthHandler) Logout(ctx *gin.Context) error {
-	logger := logging.FromContext(ctx)
+	logger := logging.FromContext(ctx.Request.Context())
 
 	authHeader := ctx.GetHeader("Authorization")
 
@@ -205,7 +228,15 @@ func (a *AuthHandler) Logout(ctx *gin.Context) error {
 		return errors.New(msg)
 	}
 
-	a.tokenManager.addToBlacklist(token)
+	_, expiresAt, err := a.jwtManager.ValidateToken(token)
+	if err != nil {
+		msg := "invalid authorization token: " + err.Error()
+		logger.Error(msg)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": msg})
+		return errors.New(msg)
+	}
+
+	a.tokenManager.addToBlacklistUntil(token, expiresAt)
 
 	msg := "logged out successfully"
 	logger.Info(msg)
@@ -214,7 +245,7 @@ func (a *AuthHandler) Logout(ctx *gin.Context) error {
 }
 
 func (a *AuthHandler) Register(ctx *gin.Context) error {
-	logger := logging.FromContext(ctx)
+	logger := logging.FromContext(ctx.Request.Context())
 
 	var req types.RegisterRequest
 
@@ -242,7 +273,7 @@ func (a *AuthHandler) Register(ctx *gin.Context) error {
 	user := types.User{
 		Username: req.Username,
 		Password: string(hashSalt.Hash),
-		Salt:     string(hashSalt.Salt),
+		Salt:     hex.EncodeToString(hashSalt.Salt),
 		Date:     objDate,
 		Version:  objVersion,
 	}
@@ -252,7 +283,7 @@ func (a *AuthHandler) Register(ctx *gin.Context) error {
 	}
 
 	id, status, err := a.db.InsertDocument(
-		ctx,
+		ctx.Request.Context(),
 		mongo.DbCollections[mongo.UserCollection],
 		&insertingConditions,
 		&user,
@@ -280,7 +311,7 @@ func (a *AuthHandler) Register(ctx *gin.Context) error {
 		return errors.New(msg)
 	}
 
-	userId := id.(string)
+	userId := id.Hex()
 	ctx.JSON(http.StatusCreated, types.AuthResponse{
 		UserID: userId,
 		Token:  token,

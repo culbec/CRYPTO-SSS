@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/culbec/CRYPTO-sss/src/backend/internal"
@@ -12,6 +13,14 @@ import (
 	"github.com/culbec/CRYPTO-sss/src/backend/pkg/mongo"
 	"github.com/gin-gonic/gin"
 )
+
+func loggerMiddleware(logger *slog.Logger) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		reqCtx := logging.WithContext(ctx.Request.Context(), logger)
+		ctx.Request = ctx.Request.WithContext(reqCtx)
+		ctx.Next()
+	}
+}
 
 // corsMiddleware: middleware to enable CORS.
 // Allows all origins, credentials, headers, and methods.
@@ -48,7 +57,7 @@ func prepareAuthHandlers(router *gin.Engine, auth *auth.AuthHandler) []*gin.Rout
 	})
 
 	router.POST("/api/auth/validate", func(ctx *gin.Context) {
-		logger := logging.FromContext(ctx)
+		logger := logging.FromContext(ctx.Request.Context())
 
 		_, err := auth.ValidateToken(ctx)
 		if err != nil {
@@ -70,12 +79,12 @@ func prepareHandlers(router *gin.Engine, ctx context.Context, config *pkg.Config
 
 	secretKey := config.JwtSecretKey
 	if secretKey == "" {
-		logger.Error("JWT secret key not set, using default")
+		logger.Error("JWT secret key not set")
 		panic("JWT secret key not set")
 	}
 
 	// mock ping-pong endpoint
-	router.GET("/ping", func(ctx *gin.Context) {
+	router.GET("/api/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 
@@ -116,22 +125,24 @@ func main() {
 
 	router := gin.Default()
 
-	logger.Info("Enabling default CORS configuration...")
+	router.Use(loggerMiddleware(logger))
+
+	logger.Info("Enabling CORS configuration...")
 	router.Use(corsMiddleware())
 
 	logger.Info("Preparing the DB client...")
 	client, err := mongo.PrepareClient(ctx, config)
 	if err != nil {
 		logger.Error("Error preparing the DB client", "error", err)
-	} else {
-		logger.Info("DB client prepared!")
-		defer func() {
-			err := mongo.Cleanup(ctx, client)
-			if err != nil {
-				logger.Error("Error cleaning up the DB client", "error", err)
-			}
-		}()
+		panic(err)
 	}
+	logger.Info("DB client prepared!")
+	defer func() {
+		err := mongo.Cleanup(ctx, client)
+		if err != nil {
+			logger.Error("Error cleaning up the DB client", "error", err)
+		}
+	}()
 
 	logger.Info("Preparing the handlers...")
 	prepareHandlers(router, ctx, config, client)

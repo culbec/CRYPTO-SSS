@@ -67,9 +67,9 @@ func TestJWTManager_GenerateToken(t *testing.T) {
 			wantError: false,
 		},
 		{
-			name:      "generates token for empty username",
+			name:      "rejects token generation for empty username",
 			username:  "",
-			wantError: false,
+			wantError: true,
 		},
 		{
 			name:      "generates token for username with special characters",
@@ -112,15 +112,6 @@ func TestJWTManager_ValidateToken(t *testing.T) {
 				return token
 			},
 			wantUser:  "testuser",
-			wantError: false,
-		},
-		{
-			name: "validates token with empty username",
-			setup: func() string {
-				token, _ := manager.GenerateToken("")
-				return token
-			},
-			wantUser:  "",
 			wantError: false,
 		},
 		{
@@ -169,7 +160,7 @@ func TestJWTManager_ValidateToken(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			token := tt.setup()
-			username, err := manager.ValidateToken(token)
+			username, _, err := manager.ValidateToken(token)
 			if (err != nil) != tt.wantError {
 				t.Errorf("ValidateToken() error = %v, wantError %v", err, tt.wantError)
 				return
@@ -198,10 +189,6 @@ func TestJWTManager_GenerateAndValidateToken(t *testing.T) {
 			name:     "generates and validates token for username with special chars",
 			username: "user@example.com",
 		},
-		{
-			name:     "generates and validates token for empty username",
-			username: "",
-		},
 	}
 
 	for _, tt := range tests {
@@ -211,7 +198,7 @@ func TestJWTManager_GenerateAndValidateToken(t *testing.T) {
 				t.Fatalf("GenerateToken() error = %v, want nil", err)
 			}
 
-			username, err := manager.ValidateToken(token)
+			username, _, err := manager.ValidateToken(token)
 			if err != nil {
 				t.Fatalf("ValidateToken() error = %v, want nil", err)
 			}
@@ -236,7 +223,7 @@ func TestJWTManager_ExpiredToken(t *testing.T) {
 	// Wait a bit to ensure token is expired
 	time.Sleep(100 * time.Millisecond)
 
-	username, err := manager.ValidateToken(token)
+	username, _, err := manager.ValidateToken(token)
 	if err == nil {
 		t.Errorf("ValidateToken() error = nil, want error for expired token")
 	}

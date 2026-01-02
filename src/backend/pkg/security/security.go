@@ -9,7 +9,6 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-
 // Argon2idHash: struct to hold the Argon2id hash configuration.
 type Argon2idHash struct {
 	Time    uint32 // number of passes over the memory
