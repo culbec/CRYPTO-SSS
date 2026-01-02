@@ -50,19 +50,23 @@ func (t *tokenManager) isBlacklisted(token string) bool {
 
 	t.blacklistMutex.RLock()
 	exp, ok := t.tokenBlacklist[token]
-	t.blacklistMutex.RUnlock()
 	if !ok {
+		t.blacklistMutex.RUnlock()
 		return false
 	}
 
 	// blacklisted while token is not yet expired
 	if now.Before(exp) {
+		t.blacklistMutex.RUnlock()
 		return true
 	}
+	t.blacklistMutex.RUnlock()
 
 	// opportunistic cleanup
 	t.blacklistMutex.Lock()
-	delete(t.tokenBlacklist, token)
+	if exp2, ok2 := t.tokenBlacklist[token]; ok2  && !now.Before(exp2) {
+		delete(t.tokenBlacklist, token)
+	}
 	t.blacklistMutex.Unlock()
 	return false
 }

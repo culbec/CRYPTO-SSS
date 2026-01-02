@@ -14,6 +14,7 @@ func RequireAuth(auth *AuthHandler) gin.HandlerFunc {
 		username, err := auth.ValidateToken(ctx)
 		if err != nil {
 			// ValidateToken already wrote the response.
+			ctx.Abort()
 			return
 		}
 
@@ -39,6 +40,7 @@ func RequireNoAuth(auth *AuthHandler) gin.HandlerFunc {
 		_, err := auth.ValidateToken(ctx)
 		if err == nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "already authenticated"})
+			ctx.Abort()
 			return
 		}
 		ctx.Next()
