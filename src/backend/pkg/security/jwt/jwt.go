@@ -1,10 +1,16 @@
 package security_jwt
 
 import (
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
+
+type Claims struct {
+	Username string `json:"username"`
+	jwt.RegisteredClaims
+}
 
 // JWTManager: struct to hold the JWT manager.
 type JWTManager struct {
@@ -24,9 +30,17 @@ func NewJWTManager(secretKey []byte, expiry time.Duration) *JWTManager {
 // GenerateToken: generates a new JWT token.
 // Returns the JWT token and an error if the token generation fails.
 func (m *JWTManager) GenerateToken(username string) (string, error) {
-	claims := jwt.MapClaims{
-		"username": username,
-		"exp":      time.Now().Add(m.Expiry).Unix(),
+	if username == "" {
+		return "", errors.New("username cannot be empty")
+	}
+
+	now := time.Now()
+	claims := &Claims{
+		Username: username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(now.Add(m.Expiry)),
+			IssuedAt:  jwt.NewNumericDate(now),
+		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -34,37 +48,29 @@ func (m *JWTManager) GenerateToken(username string) (string, error) {
 }
 
 // ValidateToken: validates a JWT token.
-// Returns the username and an error if the token validation fails.
-func (m *JWTManager) ValidateToken(token string) (string, error) {
-	// Parse the token
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		// Check the signing method
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrInvalidKey
-		}
+// Returns the username, token expiry time, and an error if the token validation fails.
+func (m *JWTManager) ValidateToken(token string) (string, time.Time, error) {
+	claims := &Claims{}
 
-		return m.secretKey, nil
-	})
-
+	parsedToken, err := jwt.ParseWithClaims(
+		token,
+		claims,
+		func(token *jwt.Token) (interface{}, error) { return m.secretKey, nil },
+		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}),
+	)
 	if err != nil {
-		return "", err
+		return "", time.Time{}, err
+	}
+	if !parsedToken.Valid {
+		return "", time.Time{}, errors.New("invalid token")
+	}
+	if claims.Username == "" {
+		return "", time.Time{}, errors.New("missing username claim")
 	}
 
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-
-	if !ok || !parsedToken.Valid {
-		return "", jwt.ErrInvalidKey
+	if claims.ExpiresAt == nil {
+		return "", time.Time{}, errors.New("missing exp claim")
 	}
 
-	usernameClaim, ok := claims["username"]
-	if !ok {
-		return "", jwt.ErrInvalidKey
-	}
-
-	username, ok := usernameClaim.(string)
-	if !ok {
-		return "", jwt.ErrInvalidType
-	}
-
-	return username, nil
+	return claims.Username, claims.ExpiresAt.Time, nil
 }

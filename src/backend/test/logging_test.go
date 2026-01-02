@@ -11,11 +11,11 @@ import (
 
 func TestInitLogger(t *testing.T) {
 	tests := []struct {
-		name string // description of this test case
+		name    string // description of this test case
 		logPath string
 	}{
 		{
-			name: "initializes logger successfully",
+			name:    "initializes logger successfully",
 			logPath: "../logs/test.log",
 		},
 	}
@@ -114,15 +114,15 @@ func TestGetDefaultLogger(t *testing.T) {
 
 func TestCloseLogger(t *testing.T) {
 	tests := []struct {
-		name string // description of this test case
+		name    string // description of this test case
 		logPath string
 	}{
 		{
-			name: "closes log file successfully",
+			name:    "closes log file successfully",
 			logPath: "../logs/test.log",
 		},
 		{
-			name: "handles multiple close calls gracefully",
+			name:    "handles multiple close calls gracefully",
 			logPath: "../logs/test.log",
 		},
 	}

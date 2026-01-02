@@ -72,8 +72,8 @@ func InitLogger(logPath string) *slog.Logger {
 
 	// Console + File handlers
 	fanout = slogmulti.Fanout(consoleHandler, fileHandler)
-	logger := slog.New(fanout)
-	return logger
+	defaultLogger = slog.New(fanout)
+	return defaultLogger
 }
 
 // WithContext: returns a new context with the logger attached.

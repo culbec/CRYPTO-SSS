@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	"github.com/culbec/CRYPTO-sss/src/backend/internal/logging"
+	"github.com/culbec/CRYPTO-sss/src/backend/internal/types"
 	config "github.com/culbec/CRYPTO-sss/src/backend/pkg"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -90,7 +90,7 @@ func (client *Client) QueryCollection(ctx context.Context, collectionName string
 
 // InsertDocument: inserts a new document into the named collection. The conditions parameter is used to check for uniqueness.
 // Returns the ID of the inserted document, HTTP status code, and an error
-func (client *Client) InsertDocument(ctx context.Context, collectionName string, conditions *bson.D, document any) (any, int, error) {
+func (client *Client) InsertDocument(ctx context.Context, collectionName string, conditions *bson.D, document any) (*types.ObjectId, int, error) {
 	logger := logging.FromContext(ctx)
 
 	collection := client.dbClient.Database(client.config.DbName).Collection(collectionName)
@@ -128,13 +128,13 @@ func (client *Client) InsertDocument(ctx context.Context, collectionName string,
 
 	logger.Info("Inserted document", "id", insertResult.InsertedID)
 
-	insertedID, ok := insertResult.InsertedID.(primitive.ObjectID)
+	insertedID, ok := insertResult.InsertedID.(types.ObjectId)
 	if !ok {
 		logger.Error("Error converting the inserted ID to an ObjectID", "id", insertResult.InsertedID, "error", errors.New("invalid inserted ID type"))
 		return nil, http.StatusInternalServerError, errors.New("invalid inserted ID type")
 	}
 
-	return insertedID, http.StatusCreated, nil
+	return &insertedID, http.StatusCreated, nil
 }
 
 // DeleteDocument: deletes a document from the named collection based on the conditions provided.

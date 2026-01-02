@@ -1,8 +1,8 @@
-DOCKER ?= docker
-DOCKERCOMPOSE ?= docker compose
+#- Makefile directory. Used to prevent redundant passing of the Makefile directory as an argument to the make command.
+MakefileDir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-#- Adjust this such that the context represents the root of the repository
-DOCKERCONTEXT ?= .
+#- Commands
+DOCKERCOMPOSE ?= docker compose
 
 .PHONY: all build-backend run-backend
 
@@ -10,8 +10,8 @@ all: build-backend
 
 build-backend:
 	@echo "Building the backend..."
-	$(DOCKERCOMPOSE) -f $(DOCKERCONTEXT)/deployments/docker-compose.yml up --build
+	$(DOCKERCOMPOSE) -f $(MakefileDir)/deployments/docker-compose.yml up --build
 
 run-backend:
 	@echo "Running the backend..."
-	$(DOCKERCOMPOSE) -f $(DOCKERCONTEXT)/deployments/docker-compose.yml up
+	$(DOCKERCOMPOSE) -f $(MakefileDir)/deployments/docker-compose.yml up

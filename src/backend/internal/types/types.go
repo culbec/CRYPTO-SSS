@@ -8,12 +8,12 @@ type ObjectId = primitive.ObjectID
 
 // User struct
 type User struct {
-	ID ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
-	Username string `json:"username" bson:"username"`
-	Password string `json:"password" bson:"password"`
-	Salt string `json:"salt" bson:"salt"`
-	Date string `json:"date" bson:"date"`
-	Version int `json:"version" bson:"version"`
+	ID       ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
+	Username string   `json:"username" bson:"username"`
+	Password string   `json:"-" bson:"password"`
+	Salt     string   `json:"-" bson:"salt"`
+	Date     string   `json:"date" bson:"date"`
+	Version  int      `json:"version" bson:"version"`
 }
 
 // LoginRequest struct
@@ -31,5 +31,5 @@ type RegisterRequest struct {
 // AuthResponse struct
 type AuthResponse struct {
 	UserID string `json:"user_id"`
-	Token string `json:"token"`
+	Token  string `json:"token"`
 }
