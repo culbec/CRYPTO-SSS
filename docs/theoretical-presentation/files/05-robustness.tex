@@ -1,0 +1,45 @@
+\begin{frame}{Extension: Cheating, Robustness, Verifiability \cite{ogata2006optimum}}
+	\textbf{\textcolor{blue}{Problem}}
+	\begin{itemize}
+		\item In real systems, participants might submit \textbf{incorrect} shares (accidental corruption or malicious cheating).
+		\item Naive reconstruction can output a wrong secret without detection.
+	\end{itemize}
+
+	\textbf{\textcolor{blue}{Typical goals}}
+	\begin{itemize}
+		\item \textbf{Verifiable Secret Sharing (VSS)}: parties can verify their shares are consistent with one committed secret.
+		\item \textbf{Cheating-secure reconstruction}: detect cheaters or tolerate a bounded number of bad shares.
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Trade-offs}
+	\begin{itemize}
+		\item Adding robustness usually increases:
+			\begin{itemize}
+				\item communication (extra proofs/commitments),
+				\item computation (verification),
+				\item share size (redundancy).
+			\end{itemize}
+		\item Key design dimensions:
+			\begin{itemize}
+				\item privacy threshold vs robustness threshold,
+				\item one-shot vs repeated reconstructions,
+				\item adversary model (passive vs active).
+			\end{itemize}
+	\end{itemize}
+
+	\begin{table}
+		\centering
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{Variant} & \textbf{Privacy} & \textbf{Detect cheating} & \textbf{Overhead} \\
+			\midrule
+			Basic SSS & \checkmark & -- & low \\
+			VSS & \checkmark & \checkmark & medium \\
+			Cheating-secure & \checkmark & \checkmark & medium/high \\
+			\bottomrule
+		\end{tabular}
+		\caption{High-level comparison (conceptual).}
+	\end{table}
+\end{frame}

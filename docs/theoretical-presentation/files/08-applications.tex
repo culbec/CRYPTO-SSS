@@ -1,0 +1,18 @@
+\begin{frame}{Applications (Where It's Used)}
+	\begin{itemize}
+		\item \textbf{Threshold cryptography}: split signing/decryption keys (no single key holder).
+		\item \textbf{Secure storage}: distribute shares across servers to reduce breach impact.
+		\item \textbf{E-voting}: CRT-based secret sharing constructions in voting/tally workflows \cite{iftene2007general}.
+		\item \textbf{Authentication/recovery}: split recovery secrets in MFA-like designs \cite{ometov2018multi}.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{How to Choose a Scheme}
+	\begin{itemize}
+		\item If policy is "any \(t\) of \(n\)": use a threshold scheme (baseline).
+		\item If policy is complex: use a construction for general access structures (watch share size).
+		\item If cheating is realistic: add verifiability or cheating-secure reconstruction.
+		\item If the secret is long-lived: consider proactive refresh.
+	\end{itemize}
+
+\end{frame}
