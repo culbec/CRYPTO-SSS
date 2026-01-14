@@ -1,0 +1,27 @@
+\begin{frame}{Method 2: General Access Structures \cite{beimel2011secret}}
+	\textbf{\textcolor{blue}{Why general access structures?}}
+	\begin{itemize}
+		\item Real policies are rarely "any \(t\) out of \(n\)".
+		\item Example: \((\text{CEO} \wedge \text{CFO}) \vee (\text{3 of 5 board members})\).
+		\item Secret sharing can realize any monotone \(\mathcal{A}\), but \textbf{efficiency} is the main challenge.
+	\end{itemize}
+
+	\textbf{\textcolor{blue}{Key idea}}
+	\begin{itemize}
+		\item Describe \(\mathcal{A}\) via a monotone formula / span program.
+		\item Implement AND/OR composition by combining smaller schemes along the formula structure.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Current Methods 3: LSSS and CRT-based Schemes}
+	\begin{itemize}
+		\item Many efficient constructions are \textbf{linear}: shares are linear combinations of secret + randomness over a field.
+		\item A common abstraction uses:
+			\begin{itemize}
+				\item a matrix \(M\) over \(\mathbb{F}_q\),
+				\item a labeling \(\rho\) mapping each row to a participant.
+			\end{itemize}
+		\item Authorized sets can reconstruct because their rows "span" the secret component; unauthorized sets cannot (perfect privacy) \cite{beimel2011secret}.
+		\item Another family: CRT-based secret sharing (shares are residues modulo carefully chosen integers) \cite{iftene2007general}.
+	\end{itemize}
+\end{frame}
