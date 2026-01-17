@@ -1,0 +1,1047 @@
+basePath: /
+definitions:
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.AccessTestResult:
+    properties:
+      auditor_group:
+        example: auditors
+        type: string
+      can_reconstruct:
+        example: true
+        type: boolean
+      message:
+        example: Access structure validated successfully
+        type: string
+      official_group:
+        example: officials
+        type: string
+      tree_structure:
+        example: AND(auditors, officials)
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.AuthResponse:
+    properties:
+      role:
+        allOf:
+        - $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserRole'
+        example: voter
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.BallotResponse:
+    properties:
+      cast_at:
+        example: "2024-01-15T10:30:00Z"
+        type: string
+      id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      poll_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      vote_commitment:
+        example: a1b2c3d4...
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.CastBallotRequest:
+    properties:
+      encrypted_vote:
+        example: base64_encrypted_data
+        type: string
+      poll_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+    required:
+    - encrypted_vote
+    - poll_id
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.ContributeShareRequest:
+    properties:
+      poll_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      share_value:
+        example: base64_share_value
+        type: string
+    required:
+    - poll_id
+    - share_value
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.CreatePollRequest:
+    properties:
+      auditor_threshold:
+        example: 1
+        minimum: 1
+        type: integer
+      auditor_total:
+        example: 2
+        minimum: 1
+        type: integer
+      description:
+        example: Annual board member election
+        type: string
+      end_time:
+        type: string
+      official_threshold:
+        example: 2
+        minimum: 1
+        type: integer
+      official_total:
+        example: 3
+        minimum: 1
+        type: integer
+      options:
+        items:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollOption'
+        minItems: 2
+        type: array
+      start_time:
+        type: string
+      title:
+        example: Board Election 2024
+        type: string
+    required:
+    - auditor_threshold
+    - auditor_total
+    - official_threshold
+    - official_total
+    - options
+    - title
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse:
+    properties:
+      error:
+        example: invalid credentials
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.LoginRequest:
+    properties:
+      password:
+        example: secretpassword
+        type: string
+      username:
+        example: johndoe
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse:
+    properties:
+      message:
+        example: operation successful
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollListResponse:
+    properties:
+      polls:
+        items:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse'
+        type: array
+      total:
+        example: 10
+        type: integer
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollOption:
+    properties:
+      id:
+        example: option_1
+        type: string
+      label:
+        example: Candidate A
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse:
+    properties:
+      ballot_commitment:
+        example: a1b2c3d4...
+        type: string
+      created_at:
+        example: "2024-01-15T10:30:00Z"
+        type: string
+      creator_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      description:
+        example: Annual board member election
+        type: string
+      end_time:
+        type: string
+      id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      options:
+        items:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollOption'
+        type: array
+      start_time:
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollStatus'
+        example: open
+      title:
+        example: Board Election 2024
+        type: string
+      updated_at:
+        example: "2024-01-15T10:30:00Z"
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollStatus:
+    enum:
+    - draft
+    - open
+    - closed
+    - frozen
+    - revealed
+    type: string
+    x-enum-varnames:
+    - PollStatusDraft
+    - PollStatusOpen
+    - PollStatusClosed
+    - PollStatusFrozen
+    - PollStatusRevealed
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.RegisterRequest:
+    properties:
+      password:
+        example: secretpassword
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserRole'
+        example: voter
+      username:
+        example: johndoe
+        type: string
+    required:
+    - password
+    - role
+    - username
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.SSSTestRequest:
+    properties:
+      secret:
+        example: my_test_secret
+        type: string
+      threshold:
+        example: 2
+        minimum: 1
+        type: integer
+      total:
+        example: 3
+        minimum: 1
+        type: integer
+    required:
+    - secret
+    - threshold
+    - total
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.SSSTestResponse:
+    properties:
+      access_structure_test:
+        $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.AccessTestResult'
+      match:
+        example: true
+        type: boolean
+      original_secret:
+        example: my_test_secret
+        type: string
+      reconstructed_secret:
+        example: my_test_secret
+        type: string
+      share_commitments:
+        items:
+          type: string
+        type: array
+      threshold:
+        example: 2
+        type: integer
+      total_shares:
+        example: 3
+        type: integer
+      used_share_indices:
+        example:
+        - 1
+        - 2
+        items:
+          type: integer
+        type: array
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.ShareDistributionResponse:
+    properties:
+      commitment:
+        example: a1b2c3d4...
+        type: string
+      group_name:
+        example: auditors
+        type: string
+      poll_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      share_index:
+        example: 1
+        type: integer
+      share_value:
+        example: base64_share_value
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.ShareStatusResponse:
+    properties:
+      auditor_shares:
+        example: 1
+        type: integer
+      auditor_threshold:
+        example: 1
+        type: integer
+      can_reveal:
+        example: true
+        type: boolean
+      contributed_by:
+        items:
+          type: string
+        type: array
+      official_shares:
+        example: 2
+        type: integer
+      official_threshold:
+        example: 2
+        type: integer
+      poll_id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.UpdatePollStatusRequest:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollStatus'
+        example: open
+    required:
+    - status
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserResponse:
+    properties:
+      date:
+        example: "2024-01-15T10:30:00Z"
+        type: string
+      id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserRole'
+        example: voter
+      username:
+        example: johndoe
+        type: string
+    type: object
+  github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserRole:
+    enum:
+    - voter
+    - auditor
+    - official
+    - admin
+    type: string
+    x-enum-varnames:
+    - RoleVoter
+    - RoleAuditor
+    - RoleOfficial
+    - RoleAdmin
+host: localhost:3000
+info:
+  contact:
+    email: support@crypto-sss.io
+    name: API Support
+  description: Backend API for the CRYPTO-SSS project providing authentication and
+    secret sharing services.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: CRYPTO-SSS Backend API
+  version: "1.0"
+paths:
+  /api/admin/sss-access-test:
+    get:
+      description: Tests various access structure scenarios for the secret sharing
+        algorithm. Admin only.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Access structure test results
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Forbidden - admin only
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Test Access Structure Scenarios
+      tags:
+      - admin
+  /api/admin/sss-healthcheck:
+    post:
+      consumes:
+      - application/json
+      description: Tests the Shamir's Secret Sharing algorithm with provided parameters.
+        Admin only.
+      parameters:
+      - description: Test parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.SSSTestRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: SSS test results
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.SSSTestResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Forbidden - admin only
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Test Secret Sharing Algorithm
+      tags:
+      - admin
+  /api/admin/users:
+    get:
+      description: Lists all users in the system. Admin only.
+      parameters:
+      - description: Filter by role
+        in: query
+        name: role
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Forbidden - admin only
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all users
+      tags:
+      - admin
+  /api/admin/users/{id}/role:
+    put:
+      consumes:
+      - application/json
+      description: Updates a user's role. Admin only.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New role (voter, auditor, official, admin)
+        in: query
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated user
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Forbidden - admin only
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user role
+      tags:
+      - admin
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user with username and password, returns a JWT
+        token on success.
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful login with user ID and JWT token
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.AuthResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Invalid password
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      summary: User login
+      tags:
+      - auth
+  /api/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Invalidates the user's JWT token by adding it to a blacklist until
+        expiration.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful logout
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse'
+        "400":
+          description: Missing or invalid authorization header
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Token blacklisted or invalid
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: User logout
+      tags:
+      - auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account with the provided username and password.
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful registration with user ID and JWT token
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.AuthResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "409":
+          description: User already exists
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      summary: User registration
+      tags:
+      - auth
+  /api/auth/validate:
+    post:
+      consumes:
+      - application/json
+      description: Validates the current JWT token and returns success if valid.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token is valid
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse'
+        "400":
+          description: Missing or invalid authorization header
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Token blacklisted or invalid
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Validate token
+      tags:
+      - auth
+  /api/ballots:
+    post:
+      consumes:
+      - application/json
+      description: Casts an encrypted vote for a poll. Only voters can cast ballots.
+      parameters:
+      - description: Encrypted ballot
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.CastBallotRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Ballot cast successfully
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.BallotResponse'
+        "400":
+          description: Invalid request or poll not open
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Already voted or not a voter
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: Poll not found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Cast a vote
+      tags:
+      - ballots
+  /api/ballots/contribute-share:
+    post:
+      consumes:
+      - application/json
+      description: Contributes a share to participate in revealing poll results. Only
+        auditors and officials can contribute.
+      parameters:
+      - description: Share contribution
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ContributeShareRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Share contributed
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Not authorized to contribute
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: No share found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Contribute share for reveal
+      tags:
+      - ballots
+  /api/ballots/poll/{poll_id}/my-ballot:
+    get:
+      description: Retrieves the ballot receipt for the authenticated user for a specific
+        poll.
+      parameters:
+      - description: Poll ID
+        in: path
+        name: poll_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ballot receipt
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.BallotResponse'
+        "400":
+          description: Invalid poll ID
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: Ballot not found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get my ballot receipt
+      tags:
+      - ballots
+  /api/polls:
+    get:
+      description: Retrieves all polls. Optionally filter by status.
+      parameters:
+      - description: Filter by status (draft, open, closed, frozen, revealed)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of polls
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all polls
+      tags:
+      - polls
+    post:
+      consumes:
+      - application/json
+      description: Creates a new voting poll. Only officials and admins can create
+        polls.
+      parameters:
+      - description: Poll creation details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.CreatePollRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Poll created successfully
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Forbidden - insufficient permissions
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new poll
+      tags:
+      - polls
+  /api/polls/{id}:
+    get:
+      description: Retrieves a poll by its ID.
+      parameters:
+      - description: Poll ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Poll found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse'
+        "400":
+          description: Invalid poll ID
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: Poll not found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a poll by ID
+      tags:
+      - polls
+  /api/polls/{id}/freeze:
+    post:
+      description: Freezes the poll, computes ballot commitment, and distributes secret
+        shares to auditors and officials.
+      parameters:
+      - description: Poll ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Poll frozen and shares distributed
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse'
+        "400":
+          description: Invalid request or poll state
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: Poll not found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Freeze poll and distribute shares
+      tags:
+      - polls
+  /api/polls/{id}/my-share:
+    get:
+      description: Retrieves the secret share assigned to the authenticated user for
+        a specific poll.
+      parameters:
+      - description: Poll ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Share retrieved
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ShareDistributionResponse'
+        "400":
+          description: Invalid poll ID
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: No share found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get my share for a poll
+      tags:
+      - polls
+  /api/polls/{id}/share-status:
+    get:
+      description: Gets the current status of share collection for revealing a poll.
+      parameters:
+      - description: Poll ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Share status
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ShareStatusResponse'
+        "400":
+          description: Invalid poll ID
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: Poll not found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get share collection status
+      tags:
+      - polls
+  /api/polls/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Updates the status of a poll. Only the creator, officials, or admins
+        can update status.
+      parameters:
+      - description: Poll ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UpdatePollStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Poll status updated
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "404":
+          description: Poll not found
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update poll status
+      tags:
+      - polls
+securityDefinitions:
+  BearerAuth:
+    description: Enter JWT token directly (Bearer prefix is optional).
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

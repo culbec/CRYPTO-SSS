@@ -17,6 +17,8 @@ type Config struct {
 	ServerHost   string `json:"server_host"`
 	ServerPort   string `json:"server_port"`
 	ConfigPath   string // path to the config file
+	ReleaseMode  bool   `json:"release_mode"`
+	SeedData     bool   `json:"seed_data"` // if true, generate sample data on startup
 }
 
 // chooseConfigFile: chooses the config file.

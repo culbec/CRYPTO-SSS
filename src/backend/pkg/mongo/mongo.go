@@ -38,10 +38,18 @@ type DbCollectionType int
 
 const (
 	UserCollection DbCollectionType = iota
+	PollCollection
+	BallotCollection
+	SecretShareCollection
+	PollResultCollection
 )
 
 var DbCollections = map[DbCollectionType]string{
-	UserCollection: "users",
+	UserCollection:        "users",
+	PollCollection:        "polls",
+	BallotCollection:      "ballots",
+	SecretShareCollection: "secret_shares",
+	PollResultCollection:  "poll_results",
 }
 
 // QueryCollection: queries a named collection in the database based on some conditions.
