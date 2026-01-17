@@ -1,5 +1,5 @@
 services:
-  backend:
+  crypto-sss-backend:
     build:
       context: ..
       dockerfile: src/backend/deployments/Dockerfile
