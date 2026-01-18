@@ -1,3 +1,8 @@
+// Package auth provides authentication handlers for the API.
+//
+// @title Authentication API
+// @version 1.0
+// @description Authentication endpoints for user login, registration, and logout.
 package auth
 
 import (
@@ -99,6 +104,9 @@ func (a *AuthHandler) GetTokenManager() *tokenManager {
 	return a.tokenManager
 }
 
+// ValidateToken validates the Authorization header and returns the username if valid.
+// This method is used by middleware and other handlers that need to validate tokens.
+// Accepts tokens with or without the "Bearer " prefix for Swagger UI compatibility.
 func (a *AuthHandler) ValidateToken(ctx *gin.Context) (string, error) {
 	logger := logging.FromContext(ctx.Request.Context())
 
@@ -106,23 +114,17 @@ func (a *AuthHandler) ValidateToken(ctx *gin.Context) (string, error) {
 	if token == "" {
 		msg := "no authorization token provided"
 		logger.Error(msg)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": msg})
+		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: msg})
 		return "", errors.New(msg)
 	}
 
-	if !strings.HasPrefix(token, authHeaderPrefix) {
-		msg := "invalid authorization token format. Expected " + authHeaderPrefix + "<token>"
-		logger.Error(msg)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": msg})
-		return "", errors.New(msg)
-	}
-
+	// Accept tokens with or without "Bearer " prefix
 	token = strings.TrimPrefix(token, authHeaderPrefix)
 
 	if a.tokenManager.isBlacklisted(token) {
 		msg := "authorization token is blacklisted"
 		logger.Error(msg)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": msg})
+		ctx.JSON(http.StatusUnauthorized, types.ErrorResponse{Error: msg})
 		return "", errors.New(msg)
 	}
 
@@ -130,7 +132,7 @@ func (a *AuthHandler) ValidateToken(ctx *gin.Context) (string, error) {
 	if err != nil {
 		msg := "invalid authorization token: " + err.Error()
 		logger.Error(msg)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": msg})
+		ctx.JSON(http.StatusUnauthorized, types.ErrorResponse{Error: msg})
 		return "", errors.New(msg)
 	}
 
@@ -138,7 +140,21 @@ func (a *AuthHandler) ValidateToken(ctx *gin.Context) (string, error) {
 	return username, nil
 }
 
-func (a *AuthHandler) Login(ctx *gin.Context) error {
+// LoginHandler godoc
+//
+//	@Summary		User login
+//	@Description	Authenticates a user with username and password, returns a JWT token on success.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		types.LoginRequest	true	"Login credentials"
+//	@Success		200		{object}	types.AuthResponse	"Successful login with user ID and JWT token"
+//	@Failure		400		{object}	types.ErrorResponse	"Invalid request body"
+//	@Failure		401		{object}	types.ErrorResponse	"Invalid password"
+//	@Failure		404		{object}	types.ErrorResponse	"User not found"
+//	@Failure		500		{object}	types.ErrorResponse	"Internal server error"
+//	@Router			/api/auth/login [post]
+func (a *AuthHandler) LoginHandler(ctx *gin.Context) {
 	logger := logging.FromContext(ctx.Request.Context())
 
 	var req types.LoginRequest
@@ -146,8 +162,8 @@ func (a *AuthHandler) Login(ctx *gin.Context) error {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		msg := "invalid login request: " + err.Error()
 		logger.Error(msg)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	var user []types.User
@@ -160,15 +176,15 @@ func (a *AuthHandler) Login(ctx *gin.Context) error {
 	); err != nil {
 		msg := "error querying user: " + err.Error()
 		logger.Error(msg)
-		ctx.JSON(status, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(status, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	if len(user) == 0 {
 		msg := "user with username '" + req.Username + "' not found"
 		logger.Error(msg)
-		ctx.JSON(http.StatusNotFound, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusNotFound, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	saltBytes, decodeErr := hex.DecodeString(user[0].Salt)
@@ -185,26 +201,38 @@ func (a *AuthHandler) Login(ctx *gin.Context) error {
 	if err != nil {
 		msg := "invalid password for user '" + req.Username + "'"
 		logger.Error(msg)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusUnauthorized, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	token, err := a.jwtManager.GenerateToken(user[0].Username)
 	if err != nil {
 		msg := "error generating token for user '" + req.Username + "'"
 		logger.Error(msg)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, types.AuthResponse{
 		UserID: user[0].ID.Hex(),
 		Token:  token,
+		Role:   user[0].Role,
 	})
-	return nil
 }
 
-func (a *AuthHandler) Logout(ctx *gin.Context) error {
+// LogoutHandler godoc
+//
+//	@Summary		User logout
+//	@Description	Invalidates the user's JWT token by adding it to a blacklist until expiration.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	types.MessageResponse	"Successful logout"
+//	@Failure		400	{object}	types.ErrorResponse		"Missing or invalid authorization header"
+//	@Failure		401	{object}	types.ErrorResponse		"Token blacklisted or invalid"
+//	@Router			/api/auth/logout [post]
+func (a *AuthHandler) LogoutHandler(ctx *gin.Context) {
 	logger := logging.FromContext(ctx.Request.Context())
 
 	authHeader := ctx.GetHeader("Authorization")
@@ -212,43 +240,49 @@ func (a *AuthHandler) Logout(ctx *gin.Context) error {
 	if authHeader == "" {
 		msg := "no authorization token provided"
 		logger.Error(msg)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: msg})
+		return
 	}
 
-	if !strings.HasPrefix(authHeader, authHeaderPrefix) {
-		msg := "invalid authorization token format. Expected " + authHeaderPrefix + "<token>"
-		logger.Error(msg)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": msg})
-		return errors.New(msg)
-	}
-
+	// Accept tokens with or without "Bearer " prefix
 	token := strings.TrimPrefix(authHeader, authHeaderPrefix)
 
 	if a.tokenManager.isBlacklisted(token) {
 		msg := "authorization token is blacklisted"
 		logger.Error(msg)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusUnauthorized, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	_, expiresAt, err := a.jwtManager.ValidateToken(token)
 	if err != nil {
 		msg := "invalid authorization token: " + err.Error()
 		logger.Error(msg)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusUnauthorized, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	a.tokenManager.addToBlacklistUntil(token, expiresAt)
 
 	msg := "logged out successfully"
 	logger.Info(msg)
-	ctx.JSON(http.StatusOK, gin.H{"message": msg})
-	return nil
+	ctx.JSON(http.StatusOK, types.MessageResponse{Message: msg})
 }
 
-func (a *AuthHandler) Register(ctx *gin.Context) error {
+// RegisterHandler godoc
+//
+//	@Summary		User registration
+//	@Description	Creates a new user account with the provided username and password.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		types.RegisterRequest	true	"Registration details"
+//	@Success		201		{object}	types.AuthResponse		"Successful registration with user ID and JWT token"
+//	@Failure		400		{object}	types.ErrorResponse		"Invalid request body"
+//	@Failure		409		{object}	types.ErrorResponse		"User already exists"
+//	@Failure		500		{object}	types.ErrorResponse		"Internal server error"
+//	@Router			/api/auth/register [post]
+func (a *AuthHandler) RegisterHandler(ctx *gin.Context) {
 	logger := logging.FromContext(ctx.Request.Context())
 
 	var req types.RegisterRequest
@@ -256,8 +290,8 @@ func (a *AuthHandler) Register(ctx *gin.Context) error {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		msg := "invalid register request: " + err.Error()
 		logger.Error(msg)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	hashSalt, err := a.hasher.GenerateHash(
@@ -267,17 +301,38 @@ func (a *AuthHandler) Register(ctx *gin.Context) error {
 	if err != nil {
 		msg := "error generating hash for password: " + err.Error()
 		logger.Error(msg)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	objDate := time.Now().Format(constants.TIME_FORMAT)
 	objVersion := 1
 
+	// Default to voter role if not specified
+	role := req.Role
+	if role == "" {
+		role = types.RoleVoter
+	}
+
+	// Validate role
+	validRoles := map[types.UserRole]bool{
+		types.RoleVoter:    true,
+		types.RoleAuditor:  true,
+		types.RoleOfficial: true,
+		types.RoleAdmin:    true,
+	}
+	if !validRoles[role] {
+		msg := "invalid role: " + string(role)
+		logger.Error(msg)
+		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: msg})
+		return
+	}
+
 	user := types.User{
 		Username: req.Username,
 		Password: string(hashSalt.Hash),
 		Salt:     hex.EncodeToString(hashSalt.Salt),
+		Role:     role,
 		Date:     objDate,
 		Version:  objVersion,
 	}
@@ -296,30 +351,47 @@ func (a *AuthHandler) Register(ctx *gin.Context) error {
 	if err != nil {
 		msg := "error inserting user: " + err.Error()
 		logger.Error(msg)
-		ctx.JSON(status, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(status, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	if id == nil {
 		msg := "user already exists"
 		logger.Error(msg)
-		ctx.JSON(status, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(status, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	token, err := a.jwtManager.GenerateToken(req.Username)
 	if err != nil {
 		msg := "error generating token for user '" + req.Username + "'"
 		logger.Error(msg)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": msg})
-		return errors.New(msg)
+		ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: msg})
+		return
 	}
 
 	userId := id.Hex()
 	ctx.JSON(http.StatusCreated, types.AuthResponse{
 		UserID: userId,
 		Token:  token,
+		Role:   role,
 	})
-	return nil
+}
 
+// ValidateTokenHandler godoc
+//
+//	@Summary		Validate token
+//	@Description	Validates the current JWT token and returns success if valid.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	types.MessageResponse	"Token is valid"
+//	@Failure		400	{object}	types.ErrorResponse		"Missing or invalid authorization header"
+//	@Failure		401	{object}	types.ErrorResponse		"Token blacklisted or invalid"
+//	@Router			/api/auth/validate [post]
+func (a *AuthHandler) ValidateTokenHandler(ctx *gin.Context) {
+	// Token validation is already done by RequireAuth middleware
+	// If we reach here, the token is valid
+	ctx.JSON(http.StatusOK, types.MessageResponse{Message: "Valid token"})
 }

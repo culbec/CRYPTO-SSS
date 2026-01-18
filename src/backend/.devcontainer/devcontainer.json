@@ -1,0 +1,18 @@
+{
+    "name": "crypto-sss-backend",
+    "dockerComposeFile": "../../../deployments/docker-compose.yml",
+    "service": "crypto-sss-backend",
+    "workspaceFolder": "/workspaces/crypto-sss-backend",
+    "remoteUser": "backend",
+    "updateRemoteUserUID": true,
+    "overrideCommand": true,
+    "mounts": [
+        "type=bind,source=${localWorkspaceFolder},target=/workspaces/crypto-sss-backend,consistency=cached"
+    ],
+    "forwardPorts": [
+        3000,
+        27017
+    ],
+    "postCreateCommand": "go mod tidy && go mod verify",
+    "postStartCommand": "air -c .air.toml"
+}
