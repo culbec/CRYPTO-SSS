@@ -27,14 +27,6 @@ class AuthGuardService {
   }
 }
 
-export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  const guard = new AuthGuardService(
-    new (AuthService as any)(),
-    new (Router as any)()
-  );
-  return guard.canActivate(route, state);
-};
-
 export const authGuardFactory = (authService: AuthService, router: Router): CanActivateFn => {
   return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
     if (authService.isAuthenticated()) {

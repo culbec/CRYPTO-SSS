@@ -1,0 +1,105 @@
+   <div class="polls-container">
+      <div class="polls-header">
+        <h1>Voting Polls</h1>
+        <button *ngIf="canCreatePoll()" 
+                class="btn btn-primary"
+                (click)="navigateToCreatePoll()">
+          Create New Poll
+        </button>
+      </div>
+
+      <div class="filters">
+        <button [class.active]="selectedStatus === 'all'" 
+                (click)="filterByStatus('all')">
+          All Polls
+        </button>
+        <button [class.active]="selectedStatus === 'open'" 
+                (click)="filterByStatus('open')">
+          Open
+        </button>
+        <button [class.active]="selectedStatus === 'closed'" 
+          (click)="filterByStatus('closed')">
+          Closed
+        </button>
+        <button [class.active]="selectedStatus === 'revealed'" 
+                (click)="filterByStatus('revealed')">
+          Revealed
+        </button>
+      </div>
+
+      <div class="polls-grid">
+        <div class="poll-card" *ngFor="let poll of filteredPolls">
+          <div class="poll-header">
+            <h2>{{ poll.title }}</h2>
+            <span [class]="'status-badge status-' + poll.status">
+              {{ getStatusLabel(poll.status) }}
+            </span>
+          </div>
+
+          <p class="poll-description">{{ poll.description }}</p>
+
+          <div class="poll-options">
+            <strong>Options:</strong>
+            <ul>
+              <li *ngFor="let option of poll.options">{{ option.label }}</li>
+            </ul>
+          </div>
+
+          <div class="poll-info">
+            <p *ngIf="poll.status === 'open'">
+              <strong>To Reveal:</strong>
+              <span *ngIf="poll.access_structure_type === 'officials_only'">
+                {{ poll.min_officials_required }} official(s)
+              </span>
+              <span *ngIf="poll.access_structure_type === 'auditors_only'">
+                {{ poll.min_auditors_required }} auditor(s)
+              </span>
+              <span *ngIf="poll.access_structure_type === 'both'">
+                {{ poll.min_auditors_required }} auditor(s) AND {{ poll.min_officials_required }} official(s)
+              </span>
+            </p>
+            <p *ngIf="poll.status === 'closed'">
+              <strong>Contributions:</strong>
+              <ng-container *ngIf="getShareStatus(poll.id) as shareStatus; else loadingShares">
+                <span *ngIf="poll.access_structure_type === 'officials_only'">
+                  {{ shareStatus.official_shares }}/{{ poll.min_officials_required }} official(s)
+                </span>
+                <span *ngIf="poll.access_structure_type === 'auditors_only'">
+                  {{ shareStatus.auditor_shares }}/{{ poll.min_auditors_required }} auditor(s)
+                </span>
+                <span *ngIf="poll.access_structure_type === 'both'">
+                  Auditors: {{ shareStatus.auditor_shares }}/{{ poll.min_auditors_required }}, Officials: {{ shareStatus.official_shares }}/{{ poll.min_officials_required }}
+                </span>
+              </ng-container>
+              <ng-template #loadingShares>
+                <span class="loading-text">Loading...</span>
+              </ng-template>
+            </p>
+            <p *ngIf="poll.status === 'revealed'">
+              <strong>Required:</strong>
+              <span *ngIf="poll.access_structure_type === 'officials_only'">
+                {{ poll.min_officials_required }} official(s)
+              </span>
+              <span *ngIf="poll.access_structure_type === 'auditors_only'">
+                {{ poll.min_auditors_required }} auditor(s)
+              </span>
+              <span *ngIf="poll.access_structure_type === 'both'">
+                {{ poll.min_auditors_required }} auditor(s) AND {{ poll.min_officials_required }} official(s)
+              </span>
+            </p>
+          </div>
+
+          <div class="poll-action">
+            <button class="btn btn-secondary" 
+                    [routerLink]="getPollRoute(poll)"
+                    [attr.aria-label]="'View ' + poll.title">
+              {{ getActionLabel(poll.status) }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="filteredPolls.length === 0" class="empty-state">
+        <p>No polls available</p>
+      </div>
+    </div>

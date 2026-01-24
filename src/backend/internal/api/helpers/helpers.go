@@ -69,10 +69,11 @@ func GetUsersByRole(ctx context.Context, db *mongo.Client, role types.UserRole, 
 	if err != nil {
 		return nil, err
 	}
-	if len(users) > limit {
-		return users[:limit], nil
+	// If limit <= 0 or limit exceeds available users, return all.
+	if limit <= 0 || len(users) <= limit {
+		return users, nil
 	}
-	return users, nil
+	return users[:limit], nil
 }
 
 // GetPollByID retrieves a poll by its ID.

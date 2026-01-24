@@ -6,6 +6,7 @@ import { authGuardFactory } from './core/guards/auth.guard';
 import { AuthService } from './core/services/auth.service';
 import { Router } from '@angular/router';
 import { inject } from '@angular/core';
+import { roleGuardFactory } from './core/guards/role.guard';
 
 // Create a guard using the factory pattern
 const authGuard = () => {
@@ -14,11 +15,17 @@ const authGuard = () => {
   return authGuardFactory(authService, router);
 };
 
+const roleGuard = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  return roleGuardFactory(authService, router);
+}
+
 export const routes: Routes = [
   {
     path: '',
     redirectTo: 'home',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'home',
@@ -30,11 +37,12 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    canActivate: [authGuard],
-    children: dashboardRoutes
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin', 'official', 'auditor', 'voter'] },
+    children: dashboardRoutes,
   },
   {
     path: '**',
-    redirectTo: 'home'
+    redirectTo: 'home',
   }
 ];

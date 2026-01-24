@@ -214,9 +214,10 @@ func (a *AuthHandler) LoginHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, types.AuthResponse{
-		UserID: user[0].ID.Hex(),
-		Token:  token,
-		Role:   user[0].Role,
+		UserID:   user[0].ID.Hex(),
+		Token:    token,
+		Role:     user[0].Role,
+		Username: req.Username,
 	})
 }
 
@@ -372,9 +373,10 @@ func (a *AuthHandler) RegisterHandler(ctx *gin.Context) {
 
 	userId := id.Hex()
 	ctx.JSON(http.StatusCreated, types.AuthResponse{
-		UserID: userId,
-		Token:  token,
-		Role:   role,
+		UserID:   userId,
+		Token:    token,
+		Role:     role,
+		Username: req.Username,
 	})
 }
 

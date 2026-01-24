@@ -2,11 +2,11 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
-      <h1>CRYPTO-SSS</h1>
-      <p class="subtitle">Secure Voting with Shamir's Secret Sharing</p>
+      <h1>ShardVote</h1>
+      <p class="subtitle">Secure Digital Voting with Shamir's Secret Sharing</p>
       <p class="description">
-        Experience a revolutionary voting system powered by cryptographic threshold schemes.
-        Ensure voting security and transparency through advanced secret sharing technology.
+        Experience electronic voting powered by cryptographic threshold schemes.
+        Ensure voting security and transparency through secret sharing technology.
       </p>
 
       <div class="hero-actions" *ngIf="!isAuthenticated">
@@ -127,7 +127,7 @@
       <a routerLink="/auth/register" class="btn btn-primary">Get Started</a>
     </div>
     <div class="cta-actions" *ngIf="isAuthenticated">
-      <p class="welcome">Welcome back, {{ user?.role }}!</p>
+      <p class="welcome">Welcome back, {{ user?.role | titlecase }}!</p>
       <a routerLink="/dashboard" class="btn btn-primary">Access Your Dashboard</a>
     </div>
   </section>

@@ -13,6 +13,7 @@ export interface AuthResponse {
   user_id: string;
   token: string;
   role: UserRole;
+  username: string;
 }
 
 export interface User {

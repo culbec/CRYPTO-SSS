@@ -186,7 +186,7 @@ export class AuthService {
   private handleAuthResponse(response: AuthResponse): void {
     const user: User = {
       id: response.user_id,
-      username: '', // Will be populated from token if needed
+      username: response.username,
       role: response.role,
       date: new Date().toISOString()
     };

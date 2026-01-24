@@ -1,0 +1,168 @@
+<div class="create-poll-container">
+  <div class="create-poll-card">
+    <h1>Create New Poll</h1>
+    <p class="subtitle">Set up a new voting poll with custom options and access requirements</p>
+
+    <form (ngSubmit)="createPoll()" #pollForm="ngForm">
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title">Poll Title *</label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title"
+          [(ngModel)]="poll.title" 
+          required
+          placeholder="e.g., Board Election 2024"
+          class="form-control">
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea 
+          id="description" 
+          name="description"
+          [(ngModel)]="poll.description" 
+          rows="3"
+          placeholder="Provide details about this poll..."
+          class="form-control"></textarea>
+      </div>
+
+      <!-- Options -->
+      <div class="form-group">
+        <label>Voting Options *</label>
+        <div class="options-list">
+          <div class="option-item" *ngFor="let option of poll.options; let i = index">
+            <input 
+              type="text" 
+              [(ngModel)]="option.label" 
+              [name]="'option_' + i"
+              placeholder="Option {{ i + 1 }}"
+              class="form-control"
+              required>
+            <button type="button" 
+                    class="btn btn-danger btn-sm"
+                    (click)="removeOption(i)"
+                    [disabled]="poll.options.length <= 2">
+              Remove
+            </button>
+          </div>
+        </div>
+        <button type="button" 
+                class="btn btn-secondary"
+                (click)="addOption()">
+          + Add Option
+        </button>
+        <p class="help-text">Minimum 2 options required</p>
+      </div>
+
+      <!-- Access Structure -->
+      <div class="access-structure-section">
+        <h2>Access Structure (Secret Sharing)</h2>
+        <p class="help-text">
+          Define who must participate to reveal results. Shares will be distributed to all users with the appropriate roles.
+        </p>
+
+        <!-- Access Type Selector -->
+        <div class="form-group">
+          <label for="access_structure_type">Access Structure Type *</label>
+          <select 
+            id="access_structure_type" 
+            name="access_structure_type"
+            [(ngModel)]="poll.access_structure_type" 
+            required
+            class="form-control">
+            <option value="officials_only">Officials Only</option>
+            <option value="auditors_only">Auditors Only</option>
+            <option value="both">Both Officials AND Auditors</option>
+          </select>
+          <p class="help-text-small">
+            Choose who needs to contribute shares to reveal results
+          </p>
+        </div>
+
+        <div class="access-grid">
+          <!-- Auditors - show only if auditors are required -->
+          <div class="form-group" *ngIf="poll.access_structure_type === 'auditors_only' || poll.access_structure_type === 'both'">
+            <label for="min_auditors_required">Minimum Auditors Required *</label>
+            <input 
+              type="number" 
+              id="min_auditors_required" 
+              name="min_auditors_required"
+              [(ngModel)]="poll.min_auditors_required" 
+              min="1"
+              required
+              class="form-control">
+            <p class="help-text-small">
+              Minimum number of auditors who must contribute their shares
+            </p>
+          </div>
+
+          <!-- Officials - show only if officials are required -->
+          <div class="form-group" *ngIf="poll.access_structure_type === 'officials_only' || poll.access_structure_type === 'both'">
+            <label for="min_officials_required">Minimum Officials Required *</label>
+            <input 
+              type="number" 
+              id="min_officials_required" 
+              name="min_officials_required"
+              [(ngModel)]="poll.min_officials_required" 
+              min="1"
+              required
+              class="form-control">
+            <p class="help-text-small">
+              Minimum number of officials who must contribute their shares
+            </p>
+          </div>
+        </div>
+
+        <div class="access-preview">
+          <strong>Access Requirements:</strong>
+          <p *ngIf="poll.access_structure_type === 'officials_only'">
+            To reveal results, need at least <strong>{{ poll.min_officials_required }}</strong> officials to contribute.
+          </p>
+          <p *ngIf="poll.access_structure_type === 'auditors_only'">
+            To reveal results, need at least <strong>{{ poll.min_auditors_required }}</strong> auditors to contribute.
+          </p>
+          <p *ngIf="poll.access_structure_type === 'both'">
+            To reveal results, need at least <strong>{{ poll.min_auditors_required }}</strong> auditors AND 
+            <strong>{{ poll.min_officials_required }}</strong> officials to contribute.
+          </p>
+          <p class="help-text-small">
+            Shares will be automatically distributed to all users with the appropriate role when the poll is closed.
+          </p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" 
+                class="btn btn-secondary"
+                (click)="cancel()">
+          Cancel
+        </button>
+        <button type="submit" 
+                class="btn btn-primary"
+                [disabled]="!pollForm.valid || isSubmitting">
+          {{ isSubmitting ? 'Creating...' : 'Create Poll' }}
+        </button>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+    </form>
+    <!-- Success Modal -->
+  <div *ngIf="showSuccessModal" class="modal-backdrop">
+    <div class="modal">
+      <h3>✓ Poll Created</h3>
+      <p>Your poll was created successfully. Redirecting to the list...</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" (click)="goToPolls()">Back to Polls</button>
+        <button class="btn btn-secondary" (click)="closeSuccessModal()">Stay Here</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

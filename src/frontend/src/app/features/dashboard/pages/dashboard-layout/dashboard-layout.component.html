@@ -18,34 +18,14 @@
             <span class="nav-text">Polls</span>
           </a>
         </li>
-        <li>
-          <a
-            routerLink="/dashboard/voting"
-            [class.active]="isActive('voting')"
-            (click)="closeSidebar()"
-          >
-            <span class="nav-icon">🗳️</span>
-            <span class="nav-text">Voting</span>
-          </a>
-        </li>
-        <li>
-          <a
-            routerLink="/dashboard/results"
-            [class.active]="isActive('results')"
-            (click)="closeSidebar()"
-          >
-            <span class="nav-icon">📊</span>
-            <span class="nav-text">Results</span>
-          </a>
-        </li>
         <li *ngIf="authService.hasRole('official')">
           <a
-            routerLink="/dashboard/manage"
-            [class.active]="isActive('manage')"
+            routerLink="/dashboard/polls/create"
+            [class.active]="isActive('create')"
             (click)="closeSidebar()"
           >
-            <span class="nav-icon">⚙️</span>
-            <span class="nav-text">Manage Polls</span>
+            <span class="nav-icon">➕</span>
+            <span class="nav-text">Create Poll</span>
           </a>
         </li>
       </ul>

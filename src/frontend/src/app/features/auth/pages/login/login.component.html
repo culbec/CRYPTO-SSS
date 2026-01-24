@@ -1,7 +1,7 @@
 <div class="login-container">
   <div class="login-card">
     <div class="login-header">
-      <h1>CRYPTO-SSS</h1>
+      <h1>ShardVote</h1>
       <p>Secure Voting System</p>
     </div>
 
@@ -41,8 +41,8 @@
             (click)="togglePasswordVisibility()"
             [disabled]="isLoading"
           >
-            <span *ngIf="!showPassword()">👁️</span>
-            <span *ngIf="showPassword()">🙈</span>
+            <mat-icon *ngIf="!showPassword()">visibility</mat-icon>
+            <mat-icon *ngIf="showPassword()">visibility_off</mat-icon>
           </button>
         </div>
         <div class="invalid-feedback" *ngIf="password?.invalid && password?.touched">

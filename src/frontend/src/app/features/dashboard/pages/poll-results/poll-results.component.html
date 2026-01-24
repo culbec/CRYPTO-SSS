@@ -1,0 +1,101 @@
+  <div class="results-container">
+      <div class="results-card">
+        <h1>{{ poll?.title }} - Final Results</h1>
+        <p class="subtitle">Poll Revealed - Results Decrypted via SSS</p>
+
+        <div *ngIf="pollResults" class="results-section">
+          <!-- Results Summary -->
+          <div class="summary">
+            <div class="summary-item">
+              <h3>Total Votes</h3>
+              <p class="large-number">{{ pollResults.total_votes }}</p>
+            </div>
+            <div class="summary-item">
+              <h3>Revealed At</h3>
+              <p class="small-text">{{ formatDate(pollResults.revealed_at) }}</p>
+            </div>
+          </div>
+
+          <!-- Vote Results Chart -->
+          <div class="results-chart">
+            <h2>Vote Distribution</h2>
+            <div class="chart-items">
+              <div *ngFor="let option of poll?.options" class="chart-item">
+                <div class="chart-label-row">
+                  <span class="option-label">{{ option.label }}</span>
+                  <span class="vote-count">{{ getVoteCount(option.id) }} votes</span>
+                </div>
+                <div class="chart-bar-container">
+                  <div class="chart-bar" 
+                       [style.width.%]="getPercentage(option.id)">
+                    <span class="bar-percentage" *ngIf="getPercentage(option.id) > 10">
+                      {{ getPercentage(option.id) | number:'1.1-1' }}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detailed Results -->
+          <div class="detailed-results">
+            <h2>Detailed Results</h2>
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Option</th>
+                  <th>Votes</th>
+                  <th>Percentage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let option of poll?.options">
+                  <td>{{ option.label }}</td>
+                  <td>{{ getVoteCount(option.id) }}</td>
+                  <td>{{ getPercentage(option.id) | number:'1.1-1' }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Winner -->
+          <div class="winner-section">
+            <h2>🏆 Winner</h2>
+            <div class="winner-card" *ngIf="getWinnerOption(); else tieResult">
+              <p class="winner-name">{{ getWinnerOption()?.label }}</p>
+              <p class="winner-votes">{{ getMaxVotes() }} votes ({{ getWinnerPercentage() | number:'1.1-1' }}%)</p>
+            </div>
+            <ng-template #tieResult>
+              <div class="winner-card">
+                <p class="winner-name">📊 TIE</p>
+                <p class="winner-votes">Multiple options tied at {{ getMaxVotes() }} votes</p>
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- Verification Info -->
+          <div class="verification-section">
+            <h2>Verification</h2>
+            <p>
+              This result was obtained by reconstructing the master encryption key from secret shares
+              provided by the required number of auditors and officials, then decrypting all submitted ballots.
+            </p>
+            <p class="technical-info">
+              <strong>Result ID:</strong><code>{{ pollResults.poll_id }}</code><br>
+              <strong>Revealed:</strong> {{ formatDate(pollResults.revealed_at) }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="!pollResults" class="loading-state">
+          <p>Loading poll results...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error" class="error-state">
+          <p>{{ error }}</p>
+          <button class="btn btn-secondary" (click)="goBack()">Go Back</button>
+        </div>
+      </div>
+    </div>

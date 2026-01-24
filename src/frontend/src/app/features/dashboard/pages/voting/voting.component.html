@@ -1,10 +1,95 @@
-<div class="voting-container">
-  <div class="page-header">
-    <h1>Voting</h1>
-    <p>Cast your encrypted votes</p>
-  </div>
+ <div class="voting-container">
+      <div class="voting-card">
+        <div class="poll-header">
+          <h1>{{ poll?.title }}</h1>
+          <span [class]="'status-badge status-' + poll?.status">
+            {{ getStatusLabel(poll?.status) }}
+          </span>
+        </div>
 
-  <div class="content">
-    <p>Voting component - Coming soon</p>
-  </div>
-</div>
+        <p class="poll-description">{{ poll?.description }}</p>
+
+        <!-- Voting Section -->
+        <div *ngIf="poll?.status === 'open'" class="voting-section">
+          <h2>Cast Your Vote</h2>
+          
+          <div *ngIf="!myBallot" class="options-grid">
+            <button *ngFor="let option of poll?.options"
+                    class="option-btn"
+                    [class.selected]="selectedOption?.id === option.id"
+                    (click)="selectOption(option)">
+              <span class="option-icon">{{ option.label.charAt(0) }}</span>
+              <span class="option-label">{{ option.label }}</span>
+            </button>
+          </div>
+
+          <button *ngIf="!myBallot && selectedOption" 
+                  class="btn btn-primary btn-large"
+                  (click)="castVote()">
+            Confirm Vote
+          </button>
+
+          <button *ngIf="!myBallot && !selectedOption" 
+                  class="btn btn-disabled btn-large"
+                  disabled>
+            Select an option to vote
+          </button>
+        </div>
+
+        <!-- Ballot Receipt Section -->
+        <div *ngIf="myBallot" class="ballot-receipt-section">
+          <h2>✓ Vote Cast Successfully</h2>
+          <div class="receipt">
+            <p>
+              <strong>Vote Commitment:</strong><br>
+              <code>{{ myBallot.vote_commitment }}</code>
+            </p>
+            <p>
+              <strong>Cast at:</strong> {{ formatDate(myBallot.cast_at) }}
+            </p>
+          </div>
+          <p class="receipt-note">
+            Your vote has been encrypted and secured. Keep this commitment for verification.
+          </p>
+        </div>
+
+        <!-- Poll Not Open Section -->
+        <div *ngIf="poll?.status !== 'open' && !myBallot" class="poll-closed-section">
+          <h2>Voting Not Available</h2>
+          <p>This poll is currently {{ poll?.status }}.</p>
+          <p *ngIf="poll?.status === 'closed'">
+            Voting has ended. Please wait for the reveal phase.
+          </p>
+          <p *ngIf="poll?.status === 'revealed'">
+            Results have been revealed. <a routerLink="../results">View Results</a>
+          </p>
+        </div>
+
+        <!-- Loading/Error State -->
+        <div *ngIf="!poll" class="loading-state">
+          <p>Loading poll...</p>
+        </div>
+
+
+        <!-- Feedback Modal (Success / Error) -->
+        <div *ngIf="showModal" class="modal-backdrop" (click)="closeModal()">
+          <div class="modal" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+              <h3>{{ modalTitle }}</h3>
+              <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+              <p [class]="modalType === 'success' ? 'modal-success' : 'modal-error'">
+                {{ modalMessage }}
+              </p>
+              <p *ngIf="modalType === 'success' && myBallot" class="help-text">
+                Receipt: <code>{{ myBallot.vote_commitment.substring(0, 16) }}...</code>
+              </p>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

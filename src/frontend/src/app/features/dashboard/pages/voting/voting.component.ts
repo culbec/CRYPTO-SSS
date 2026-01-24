@@ -1,11 +1,110 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { VotingService } from '../../../../core/services/voting.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Poll, PollOption, BallotResponse } from '../../../../core/models/poll.model';
 
 @Component({
   selector: 'app-voting',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './voting.component.html',
-  styleUrl: './voting.component.scss'
+  styleUrls: ['./voting.component.scss']
 })
-export class VotingComponent {}
+export class VotingComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private votingService = inject(VotingService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  poll: Poll | null = null;
+  selectedOption: PollOption | null = null;
+  myBallot: BallotResponse | null = null;
+
+  showModal = false;
+  modalType: 'success' | 'error' = 'success';
+  modalTitle = '';
+  modalMessage = '';
+
+
+  ngOnInit() {
+    const pollId = this.route.snapshot.paramMap.get('id');
+    if (pollId) {
+      this.loadPoll(pollId);
+      this.checkExistingBallot(pollId);
+    }
+  }
+
+  loadPoll(pollId: string) {
+    this.votingService.getPollById(pollId).subscribe({
+      next: (poll) => this.poll = poll,
+      error: (err: any) => {
+        console.error('Failed to load poll', err);
+        this.router.navigate(['/dashboard/polls']);
+      }
+    });
+  }
+
+  checkExistingBallot(pollId: string) {
+    this.votingService.getMyBallot(pollId).subscribe({
+      next: (ballot) => this.myBallot = ballot,
+      error: (err: any) => {
+        if (err.status !== 404) {
+          console.error('Error checking ballot', err);
+        }
+      }
+    });
+  }
+
+  selectOption(option: PollOption) {
+    this.selectedOption = option;
+  }
+
+  castVote() {
+    if (!this.selectedOption || !this.poll) return;
+
+    // PLACEHOLDER: Encrypt the vote
+    // In production, use proper encryption (AES-256-GCM or NaCl)
+    const encryptedVote = btoa(JSON.stringify({
+      option_id: this.selectedOption.id,
+      voter_id: this.authService.user()?.id,
+      timestamp: new Date().toISOString()
+    }));
+
+    this.votingService.castBallot(this.poll.id, encryptedVote).subscribe({
+      next: (response) => {
+        this.myBallot = response;
+        this.modalType = 'success';
+        this.modalTitle = 'Vote cast successfully';
+        this.modalMessage = '✓ Your vote was submitted and a receipt was generated.';
+        this.showModal = true;
+      },
+      error: (err: any) => {
+        console.error('Failed to cast vote', err);
+        this.modalType = 'error';
+        this.modalTitle = 'Could not cast vote';
+        this.modalMessage = err.error?.error || 'Unknown error';
+        this.showModal = true;
+      }
+    });
+  }
+
+  getStatusLabel(status: string | undefined): string {
+    return {
+      draft: 'Draft',
+      open: 'Open',
+      closed: 'Closed',
+      frozen: 'Frozen',
+      revealed: 'Revealed'
+    }[status || ''] || status || '';
+  }
+
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleString();
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
+}
