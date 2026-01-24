@@ -1,0 +1,23 @@
+.polls-container {
+  .page-header {
+    margin-bottom: 30px;
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 32px;
+      color: #333;
+    }
+
+    p {
+      margin: 0;
+      color: #666;
+    }
+  }
+
+  .content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+}

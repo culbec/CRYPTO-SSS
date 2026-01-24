@@ -42,3 +42,7 @@ logs/
 # Configurations
 config.local.json
 deployments/HF_TOKEN
+
+# System files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,134 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>CRYPTO-SSS</h1>
+      <p class="subtitle">Secure Voting with Shamir's Secret Sharing</p>
+      <p class="description">
+        Experience a revolutionary voting system powered by cryptographic threshold schemes.
+        Ensure voting security and transparency through advanced secret sharing technology.
+      </p>
+
+      <div class="hero-actions" *ngIf="!isAuthenticated">
+        <a routerLink="/auth/login" class="btn btn-primary">Sign In</a>
+        <a routerLink="/auth/register" class="btn btn-secondary">Create Account</a>
+      </div>
+
+      <div class="hero-actions" *ngIf="isAuthenticated">
+        <a routerLink="/dashboard" class="btn btn-primary">Go to Dashboard</a>
+      </div>
+    </div>
+
+    <div class="hero-illustration">
+      <div class="illustration-circle"></div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2>Key Features</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>End-to-End Encrypted</h3>
+        <p>All votes are encrypted using AES-256-GCM encryption, ensuring complete confidentiality.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Threshold Voting</h3>
+        <p>Results require collaborative decryption by designated auditors and officials.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">✓</div>
+        <h3>Voter Privacy</h3>
+        <p>Cast your vote with a ballot receipt, proving you voted without revealing your choice.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔑</div>
+        <h3>Secret Sharing</h3>
+        <p>Uses Shamir's Secret Sharing scheme for secure cryptographic key distribution.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Multiple Roles</h3>
+        <p>Support for voters, auditors, officials, and administrators with fine-grained access control.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Real-time Tracking</h3>
+        <p>Monitor poll status and share collection progress in real-time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Create Poll</h3>
+        <p>Officials create voting polls with custom access thresholds for result reveal.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Cast Votes</h3>
+        <p>Voters securely cast their encrypted votes and receive ballot receipts.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Freeze & Share</h3>
+        <p>Poll is frozen, ballots are committed, and secret shares are distributed to auditors and officials.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">4</div>
+        <h3>Collective Reveal</h3>
+        <p>When thresholds are met, authorized participants collaborate to securely reveal and decrypt results.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security Section -->
+  <section class="security">
+    <h2>Enterprise-Grade Security</h2>
+    <div class="security-features">
+      <div class="security-item">
+        <h4>GF(2^256-189) Arithmetic</h4>
+        <p>Calculations performed in a secure finite field preventing information leakage.</p>
+      </div>
+      <div class="security-item">
+        <h4>Argon2id Hashing</h4>
+        <p>Passwords are secured using industry-standard Argon2id password hashing.</p>
+      </div>
+      <div class="security-item">
+        <h4>JWT Authentication</h4>
+        <p>Secure token-based authentication with expiration and blacklist management.</p>
+      </div>
+      <div class="security-item">
+        <h4>Share Commitments</h4>
+        <p>SHA-256 commitments prevent tampering during the reveal phase.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <h2>Ready to Participate?</h2>
+    <p>Join the future of secure voting today</p>
+    <div class="cta-actions" *ngIf="!isAuthenticated">
+      <a routerLink="/auth/register" class="btn btn-primary">Get Started</a>
+    </div>
+    <div class="cta-actions" *ngIf="isAuthenticated">
+      <p class="welcome">Welcome back, {{ user?.role }}!</p>
+      <a routerLink="/dashboard" class="btn btn-primary">Access Your Dashboard</a>
+    </div>
+  </section>
+</div>
