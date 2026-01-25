@@ -31,13 +31,13 @@
             <h3>Contributed By:</h3>
             <ul>
               <li *ngFor="let contributor of shareStatus.contributed_by" class="contributor-badge">
-                {{ contributor }} ✓
+                {{ contributor }} <mat-icon aria-label="contributed">check</mat-icon>
               </li>
             </ul>
           </div>
 
           <div *ngIf="shareStatus.can_reveal" class="can-reveal-badge">
-            <p>✓ Threshold met! Results can now be revealed.</p>
+            <p>Threshold met! Results can now be revealed.</p>
           </div>
         </div>
 
@@ -97,6 +97,7 @@
         <!-- Loading -->
         <div *ngIf="!poll || !shareStatus" class="loading-state">
           <p>Loading poll information...</p>
+        </div>
 
         <!-- Success Modal -->
         <div *ngIf="showSuccessModal" class="modal-backdrop">
@@ -118,7 +119,6 @@
               <button class="btn btn-secondary" (click)="showErrorModal = false">Close</button>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </div>

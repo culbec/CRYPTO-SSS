@@ -57,6 +57,7 @@ func GetUserByID(ctx context.Context, db *mongo.Client, userID primitive.ObjectI
 }
 
 // GetUsersByRole retrieves users by their role, limited to the specified count.
+// If limit <= 0 or limit exceeds available users, all matching users are returned.
 func GetUsersByRole(ctx context.Context, db *mongo.Client, role types.UserRole, limit int) ([]types.User, error) {
 	var users []types.User
 	_, err := db.QueryCollection(

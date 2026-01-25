@@ -4,11 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { VotingService } from '../../../../core/services/voting.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Poll, ShareStatus, ShareDistribution } from '../../../../core/models/poll.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-share-contribution',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './share-contribution.component.html',
   styleUrls: ['./share-contribution.component.scss'] 
 })

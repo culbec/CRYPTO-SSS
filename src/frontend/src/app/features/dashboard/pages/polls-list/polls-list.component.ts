@@ -4,7 +4,6 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Poll, ShareStatus, POLL_STATUS_LABELS } from '../../../../core/models/poll.model';
 import { AuthService } from '../../../../core/services/auth.service';
-import { UserRole } from '../../../../core/models/auth.model';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -19,6 +18,8 @@ export class PollsListComponent implements OnInit {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private router = inject(Router);
+  // TODO: move API-related calls to separate service classes
+  // TODO: check if status for contributed shares of closed polls is updated correctly on poll cards
   private readonly baseUrl = 'http://localhost:3000/api';
 
   polls: Poll[] = [];
@@ -88,7 +89,6 @@ export class PollsListComponent implements OnInit {
 
   getActionLabel(status: string): string {
     const role = this.authService.userRole() ?? 'voter';
-    const isManager = role === 'official' || role === 'admin';
 
     const labelsByRole: Record<string, Record<string, string>> = {
       voter: {
@@ -127,20 +127,19 @@ export class PollsListComponent implements OnInit {
     if (poll.status === 'open') {
       return role === 'voter'
         ? `/dashboard/polls/${poll.id}/vote`
-        : `/dashboard/polls/${poll.id}`; // managers view/manage, auditors/admins view
+        : `/dashboard/polls/${poll.id}`; // auditors and officials can view/manage the poll
     }
 
     if (poll.status === 'closed') {
       return (role === 'auditor' || role === 'official' || role === 'admin')
         ? `/dashboard/polls/${poll.id}/share`
-        : `/dashboard/polls/${poll.id}`; // voters just view
+        : `/dashboard/polls/${poll.id}`; // voters are allowed only to view the poll details
     }
 
     if (poll.status === 'revealed') {
       return `/dashboard/polls/${poll.id}/results`;
     }
 
-    // draft or any other status
     return `/dashboard/polls/${poll.id}`;
   }
 

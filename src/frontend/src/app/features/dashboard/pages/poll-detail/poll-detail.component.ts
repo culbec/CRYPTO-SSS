@@ -65,7 +65,6 @@ export class PollDetailComponent implements OnInit {
       next: () => {
         this.poll!.status = 'open' as PollStatus;
         this.updatingStatus = false;
-        // Navigate to polls list
         this.router.navigate(['/dashboard/polls']);
       },
       error: (err) => {
@@ -85,7 +84,6 @@ export class PollDetailComponent implements OnInit {
       next: () => {
         this.poll!.status = 'closed' as PollStatus;
         this.updatingStatus = false;
-        // Navigate to polls list
         this.router.navigate(['/dashboard/polls']);
       },
       error: (err) => {
@@ -103,7 +101,6 @@ export class PollDetailComponent implements OnInit {
       next: () => {
         this.poll!.status = 'closed' as PollStatus;
         this.updatingStatus = false;
-        // Navigate to polls list
         this.router.navigate(['/dashboard/polls']);
       },
       error: (err) => {
