@@ -18,7 +18,7 @@
 
           <!-- Vote Results Chart -->
           <div class="results-chart">
-            <h2>Vote Distribution</h2>
+            <h2><mat-icon>bar_chart</mat-icon> Vote Distribution</h2>
             <div class="chart-items">
               <div *ngFor="let option of poll?.options" class="chart-item">
                 <div class="chart-label-row">
@@ -39,7 +39,7 @@
 
           <!-- Detailed Results -->
           <div class="detailed-results">
-            <h2>Detailed Results</h2>
+            <h2><mat-icon>table_chart</mat-icon> Detailed Results</h2>
             <table class="results-table">
               <thead>
                 <tr>
@@ -60,14 +60,16 @@
 
           <!-- Winner -->
           <div class="winner-section">
-            <h2>🏆 Winner</h2>
+            <h2><mat-icon class="winner-icon">emoji_events</mat-icon> Winner</h2>
             <div class="winner-card" *ngIf="getWinnerOption(); else tieResult">
+              <mat-icon class="winner-trophy">emoji_events</mat-icon>
               <p class="winner-name">{{ getWinnerOption()?.label }}</p>
               <p class="winner-votes">{{ getMaxVotes() }} votes ({{ getWinnerPercentage() | number:'1.1-1' }}%)</p>
             </div>
             <ng-template #tieResult>
               <div class="winner-card">
-                <p class="winner-name">📊 TIE</p>
+                <mat-icon class="tie-icon">balance</mat-icon>
+                <p class="winner-name">TIE</p>
                 <p class="winner-votes">Multiple options tied at {{ getMaxVotes() }} votes</p>
               </div>
             </ng-template>
@@ -75,7 +77,7 @@
 
           <!-- Verification Info -->
           <div class="verification-section">
-            <h2>Verification</h2>
+            <h2><mat-icon>verified_user</mat-icon> Verification</h2>
             <p>
               This result was obtained by reconstructing the master encryption key from secret shares
               provided by the required number of auditors and officials, then decrypting all submitted ballots.

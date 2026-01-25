@@ -149,72 +149,89 @@
 .dashboard-header {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 50;
 
-  .toggle-sidebar {
-    display: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-    color: #333;
-    padding: 5px;
-
-    @media (max-width: 768px) {
-      display: block;
-    }
-
-    .menu-icon {
-      display: block;
-    }
-  }
-
-  .header-spacer {
-    flex: 1;
-  }
-
-  .user-info {
+  .brand {
     display: flex;
     align-items: center;
     gap: 12px;
+    font-size: 20px;
+    font-weight: 700;
+
+    .logo-icon {
+      font-size: 28px;
+    }
+
+    .logo-text {
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .welcome-text {
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.95;
+    }
 
     .user-role {
       display: inline-block;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
 
-      &.role-voter {
-        background: #d4edda;
-        color: #155724;
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.3s ease;
+
+      .material-icons {
+        font-size: 18px;
       }
 
-      &.role-auditor {
-        background: #cfe2ff;
-        color: #084298;
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
       }
 
-      &.role-official {
-        background: #fff3cd;
-        color: #856404;
-      }
-
-      &.role-admin {
-        background: #f8d7da;
-        color: #721c24;
+      @media (max-width: 640px) {
+        .logout-text {
+          display: none;
+        }
+        padding: 8px;
       }
     }
 
-    .user-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: #333;
+    @media (max-width: 640px) {
+      gap: 8px;
+      
+      .welcome-text {
+        display: none;
+      }
     }
   }
 }

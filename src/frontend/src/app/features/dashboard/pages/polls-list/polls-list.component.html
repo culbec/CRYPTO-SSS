@@ -46,8 +46,8 @@
           </div>
 
           <div class="poll-info">
-            <p *ngIf="poll.status === 'open'">
-              <strong>To Reveal:</strong>
+            <p *ngIf="poll.status === 'draft' || poll.status === 'open'">
+              <strong>{{ poll.status === 'draft' ? 'Will Require to Reveal:' : 'To Reveal:' }}</strong>
               <span *ngIf="poll.access_structure_type === 'officials_only'">
                 {{ poll.min_officials_required }} official(s)
               </span>

@@ -54,8 +54,10 @@
               <code>{{ myShare.share_value.substring(0, 32) }}...{{ myShare.share_value.substring(myShare.share_value.length - 32) }}</code>
             </p>
           </div>
-          <button class="btn btn-primary" (click)="contributeShare()">
-            Contribute My Share to Reveal Results
+          <button class="btn btn-primary" 
+                  (click)="contributeShare()"
+                  [disabled]="hasUserContributed()">
+            {{ hasUserContributed() ? 'Share Already Contributed' : 'Contribute My Share to Reveal Results' }}
           </button>
         </div>
 

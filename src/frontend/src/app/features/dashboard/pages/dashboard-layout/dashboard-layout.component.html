@@ -1,9 +1,13 @@
 <div class="dashboard-container">
-  <!-- Sidebar -->
+
+  <!-- Sidebar retained for possible future use -->
+  <!--
   <aside class="sidebar" [class.open]="sidebarOpen()">
     <div class="sidebar-header">
-      <h2 class="logo">CRYPTO-SSS</h2>
-      <button class="close-btn" (click)="closeSidebar()" *ngIf="!sidebarOpen()">✕</button>
+      <h2 class="logo">ShardVote</h2>
+      <button class="close-btn" (click)="closeSidebar()" *ngIf="!sidebarOpen()">
+        <span class="material-icons">close</span>
+      </button>
     </div>
 
     <nav class="sidebar-nav">
@@ -14,7 +18,7 @@
             [class.active]="isActive('polls')"
             (click)="closeSidebar()"
           >
-            <span class="nav-icon">📋</span>
+            <span class="material-icons nav-icon">list_alt</span>
             <span class="nav-text">Polls</span>
           </a>
         </li>
@@ -24,7 +28,7 @@
             [class.active]="isActive('create')"
             (click)="closeSidebar()"
           >
-            <span class="nav-icon">➕</span>
+            <span class="material-icons nav-icon">add_circle</span>
             <span class="nav-text">Create Poll</span>
           </a>
         </li>
@@ -32,30 +36,33 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="logout-btn" (click)="logout()">Logout</button>
+      <button class="logout-btn" (click)="logout()">
+        <span class="material-icons">logout</span>
+        <span>Logout</span>
+      </button>
     </div>
   </aside>
 
-  <!-- Overlay -->
   <div class="sidebar-overlay" *ngIf="sidebarOpen()" (click)="closeSidebar()"></div>
+  -->
 
-  <!-- Main Content -->
   <div class="main-content">
-    <!-- Header -->
     <header class="dashboard-header">
-      <button class="toggle-sidebar" (click)="toggleSidebar()">
-        <span class="menu-icon">☰</span>
-      </button>
+      <div class="brand">
+        <span class="material-icons logo-icon">how_to_vote</span>
+        <span class="logo-text">ShardVote</span>
+      </div>
 
-      <div class="header-spacer"></div>
-
-      <div class="user-info">
+      <div class="user-section">
+        <span class="welcome-text">Welcome, {{ user?.username || 'User' }}</span>
         <span class="user-role" [class]="'role-' + userRole">{{ userRole }}</span>
-        <span class="user-name">{{ user?.username || 'User' }}</span>
+        <button class="logout-btn" (click)="logout()">
+          <span class="material-icons">logout</span>
+          <span class="logout-text">Logout</span>
+        </button>
       </div>
     </header>
 
-    <!-- Page Content -->
     <main class="page-content">
       <router-outlet></router-outlet>
     </main>

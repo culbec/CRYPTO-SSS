@@ -1,13 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { VotingService } from '../../../../core/services/voting.service';
 import { Poll, PollResultResponse } from '../../../../core/models/poll.model';
 
 @Component({
   selector: 'app-poll-results',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './poll-results.component.html',
   styleUrls: ['./poll-results.component.scss'],
 })

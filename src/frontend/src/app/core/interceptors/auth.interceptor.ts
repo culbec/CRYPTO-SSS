@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   HttpRequest,
   HttpHandler,
@@ -8,20 +8,15 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private injector: Injector, private router: Router) {}
+  constructor(private router: Router) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const authService = this.injector.get(AuthService);
-    const router = this.injector.get(Router);
+    const token = localStorage.getItem('auth_token');
 
-    const token = authService.token();
-
-    // Clone the request and add authorization header if token exists
     if (token) {
       request = request.clone({
         setHeaders: {
@@ -33,9 +28,10 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
-          // Token expired or invalid
-          authService.logout();
-          router.navigate(['/auth/login']);
+          // Token expired or invalid: clear localStorage and redirect
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+          this.router.navigate(['/auth/login']);
         }
         return throwError(() => error);
       })

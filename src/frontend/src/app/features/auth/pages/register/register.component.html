@@ -1,7 +1,7 @@
 <div class="register-container">
   <div class="register-card">
     <div class="register-header">
-      <h1>CRYPTO-SSS</h1>
+      <h1>ShardVote</h1>
       <p>Create Your Account</p>
     </div>
 
@@ -66,8 +66,8 @@
             (click)="togglePasswordVisibility('password')"
             [disabled]="isLoading"
           >
-            <span *ngIf="!showPassword()">👁️</span>
-            <span *ngIf="showPassword()">🙈</span>
+            <mat-icon *ngIf="!showPassword()">visibility</mat-icon>
+            <mat-icon *ngIf="showPassword()">visibility_off</mat-icon>
           </button>
         </div>
         <div class="invalid-feedback" *ngIf="password?.invalid && password?.touched">
@@ -94,8 +94,8 @@
             (click)="togglePasswordVisibility('confirmPassword')"
             [disabled]="isLoading"
           >
-            <span *ngIf="!showConfirmPassword()">👁️</span>
-            <span *ngIf="showConfirmPassword()">🙈</span>
+            <mat-icon *ngIf="!showConfirmPassword()">visibility</mat-icon>
+            <mat-icon *ngIf="showConfirmPassword()">visibility_off</mat-icon>
           </button>
         </div>
         <div class="invalid-feedback" *ngIf="confirmPassword?.touched">

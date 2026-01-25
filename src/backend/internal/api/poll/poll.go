@@ -323,22 +323,20 @@ func (h *PollHandler) UpdatePollStatusHandler(ctx *gin.Context) {
 		return
 	}
 
+	// Guard: Cannot close poll via status update - must use freeze endpoint
+	if req.Status == types.PollStatusClosed {
+		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Error: "cannot close poll via status update. Use POST /api/polls/" + pollID + "/freeze to close and distribute shares",
+		})
+		return
+	}
+
 	// Validate status transition
 	if !isValidStatusTransition(poll.Status, req.Status) {
 		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{
 			Error: "invalid status transition from " + string(poll.Status) + " to " + string(req.Status),
 		})
 		return
-	}
-
-	// If closing, compute ballot commitment
-	if req.Status == types.PollStatusClosed {
-		commitment, err := h.computeBallotCommitment(ctx, objID)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: "failed to compute ballot commitment"})
-			return
-		}
-		poll.BallotCommitment = commitment
 	}
 
 	poll.Status = req.Status
@@ -840,6 +838,7 @@ func generateMasterSecret(pollID string) []byte {
 //	@Failure		404	{object}	types.ErrorResponse			"Poll not found"
 //	@Failure		500	{object}	types.ErrorResponse			"Internal server error"
 //	@Router			/api/polls/{id}/reveal [post]
+// TODO: Implement distributed shares automated removal for a revealed poll to not flood the database
 func (h *PollHandler) RevealResultsHandler(ctx *gin.Context) {
 	logger := logging.FromContext(ctx.Request.Context())
 
@@ -889,6 +888,24 @@ func (h *PollHandler) RevealResultsHandler(ctx *gin.Context) {
 	poll := &polls[0]
 	if poll.Status != types.PollStatusClosed {
 		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: "poll must be closed to reveal results"})
+		return
+	}
+
+	// Verify ballot commitment to ensure ballot integrity
+	currentCommitment, err := h.computeBallotCommitment(ctx, pollID)
+	if err != nil {
+		logger.Error("failed to compute ballot commitment for verification", "error", err)
+		ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: "failed to verify ballot integrity"})
+		return
+	}
+	if currentCommitment != poll.BallotCommitment {
+		logger.Error("ballot integrity violation detected",
+			"expected", poll.BallotCommitment,
+			"actual", currentCommitment,
+		)
+		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Error: "ballot integrity violation - ballots have been modified after freeze",
+		})
 		return
 	}
 
@@ -1025,7 +1042,7 @@ func (h *PollHandler) RevealResultsHandler(ctx *gin.Context) {
 
 	// Decrypt and count votes
 	// NOTE: Currently using base64 decoding (placeholder for real AES-256-GCM encryption)
-	// In production: implement proper symmetric decryption using masterKey
+	// TODO: Implement proper symmetric decryption using masterKey
 	for _, ballot := range ballots {
 		optionID, err := decryptBallot(ballot.EncryptedVote, masterKey)
 		if err != nil {
@@ -1063,7 +1080,7 @@ func (h *PollHandler) RevealResultsHandler(ctx *gin.Context) {
 
 	_, _, err = h.db.InsertDocument(
 		ctx.Request.Context(),
-		mongo.DbCollections[mongo.SecretShareCollection],
+		mongo.DbCollections[mongo.PollResultCollection],
 		nil,
 		&pollResult,
 	)
@@ -1174,7 +1191,7 @@ func bigIntFromHex(hexStr string) *big.Int {
 
 // decryptBallot decodes a base64-encoded ballot and extracts the option_id
 // NOTE: This is a placeholder using base64 decoding instead of real encryption
-// In production: replace with AES-256-GCM decryption using masterKey
+// TODO Replace with AES-256-GCM decryption using masterKey
 func decryptBallot(encryptedVote string, masterKey []byte) (string, error) {
 	// Placeholder: Base64 decode the vote
 	// Frontend uses: btoa(JSON.stringify({option_id, voter_id, timestamp}))

@@ -29,25 +29,14 @@ section {
   min-height: 100vh;
   position: relative;
   isolation: isolate;
-  background: none;
-
-&::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  left: calc(50% - 50vw);
-  width: 100vw;
-  height: 100%;
-  transform: none;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  z-index: -1;
-  pointer-events: none;
-}
+  margin: 0;
+  padding: 80px 40px;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
 
   color: white;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 80px 40px;
+  max-width: 100%;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -195,8 +184,13 @@ section {
 
     .feature-icon {
       font-size: 48px;
-      margin-bottom: 15px;
-      display: inline-block;
+      width: 48px;
+      height: 48px;
+      color: #667eea;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     h3 {

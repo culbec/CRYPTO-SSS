@@ -62,15 +62,23 @@ export class AuthService {
           user: parsedUser,
           isAuthenticated: true
         }));
-
-        // Validate token with backend
-        this.apiService.validateToken().subscribe({
-          error: () => this.logout()
-        });
       } catch (e) {
-        this.logout();
+        this.clearAuthState();
       }
     }
+  }
+
+  /**
+   * Clear authentication state
+   */
+  private clearAuthState(): void {
+    this.state.set({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null
+    });
   }
 
   /**
@@ -142,7 +150,8 @@ export class AuthService {
     this.state.update(s => ({ ...s, isLoading: true }));
 
     this.apiService.logout().subscribe({
-      complete: () => this.completeLogout()
+      next: () => this.completeLogout(),
+      error: () => this.completeLogout() // Clear state even if API call fails
     });
   }
 
@@ -150,13 +159,7 @@ export class AuthService {
    * Handle logout completion
    */
   private completeLogout(): void {
-    this.state.set({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null
-    });
+    this.clearAuthState();
     this.router.navigate(['/home']);
   }
 

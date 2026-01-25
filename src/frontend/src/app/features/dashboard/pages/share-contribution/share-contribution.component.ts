@@ -24,6 +24,7 @@ export class ShareContributionComponent implements OnInit {
   shareContributed = false;
   resultsRevealed = false;
   error = '';
+  currentUsername = '';
 
   // Modals
   showSuccessModal = false;
@@ -32,6 +33,7 @@ export class ShareContributionComponent implements OnInit {
   errorModalMessage = '';
 
   ngOnInit() {
+    this.currentUsername = this.authService.user()?.username || '';
     const pollId = this.route.snapshot.paramMap.get('id');
     if (pollId) {
       this.loadPoll(pollId);
@@ -114,5 +116,12 @@ export class ShareContributionComponent implements OnInit {
     if (this.poll) {
       this.router.navigate(['/dashboard/polls', this.poll.id, 'results']);
     }
+  }
+
+  hasUserContributed(): boolean {
+    if (!this.shareStatus?.contributed_by || this.shareStatus.contributed_by.length === 0) {
+      return false;
+    }
+    return this.shareStatus.contributed_by.includes(this.currentUsername);
   }
 }
