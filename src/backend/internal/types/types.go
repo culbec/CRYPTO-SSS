@@ -34,6 +34,18 @@ type User struct {
 	Version  int      `json:"version" bson:"version"`
 }
 
+// AccessStructureType represents the type of access structure for revealing poll results.
+type AccessStructureType string
+
+const (
+	// AccessStructureOfficialsOnly requires only officials to contribute shares.
+	AccessStructureOfficialsOnly AccessStructureType = "officials_only"
+	// AccessStructureAuditorsOnly requires only auditors to contribute shares.
+	AccessStructureAuditorsOnly AccessStructureType = "auditors_only"
+	// AccessStructureBoth requires both officials AND auditors to contribute shares.
+	AccessStructureBoth AccessStructureType = "both"
+)
+
 // PollStatus represents the current status of a poll.
 type PollStatus string
 
@@ -42,10 +54,8 @@ const (
 	PollStatusDraft PollStatus = "draft"
 	// PollStatusOpen indicates the poll is open for voting.
 	PollStatusOpen PollStatus = "open"
-	// PollStatusClosed indicates voting has ended but results are not revealed.
+	// PollStatusClosed indicates voting has ended, shares have been distributed, and results reveal is pending.
 	PollStatusClosed PollStatus = "closed"
-	// PollStatusFrozen indicates ballots are frozen and commitment is published.
-	PollStatusFrozen PollStatus = "frozen"
 	// PollStatusRevealed indicates results have been revealed via secret sharing.
 	PollStatusRevealed PollStatus = "revealed"
 )
@@ -67,10 +77,11 @@ type Poll struct {
 	StartTime   *time.Time   `json:"start_time,omitempty" bson:"start_time,omitempty"`
 	EndTime     *time.Time   `json:"end_time,omitempty" bson:"end_time,omitempty"`
 	// Access structure configuration for secret sharing
-	AuditorThreshold  int `json:"auditor_threshold" bson:"auditor_threshold"`
-	AuditorTotal      int `json:"auditor_total" bson:"auditor_total"`
-	OfficialThreshold int `json:"official_threshold" bson:"official_threshold"`
-	OfficialTotal     int `json:"official_total" bson:"official_total"`
+	AccessStructureType  AccessStructureType `json:"access_structure_type" bson:"access_structure_type"`
+	MinAuditorsRequired  int                 `json:"min_auditors_required" bson:"min_auditors_required"`
+	MinOfficialsRequired int                 `json:"min_officials_required" bson:"min_officials_required"`
+	TotalAuditors        int                 `json:"total_auditors" bson:"total_auditors"`
+	TotalOfficials       int                 `json:"total_officials" bson:"total_officials"`
 	// Commitment hash published when ballots are frozen
 	BallotCommitment string `json:"ballot_commitment,omitempty" bson:"ballot_commitment,omitempty"`
 	CreatedAt        string `json:"created_at" bson:"created_at"`
@@ -133,15 +144,14 @@ type RegisterRequest struct {
 
 // CreatePollRequest represents the request body for creating a new poll.
 type CreatePollRequest struct {
-	Title             string       `json:"title" binding:"required" example:"Board Election 2024"`
-	Description       string       `json:"description" example:"Annual board member election"`
-	Options           []PollOption `json:"options" binding:"required,min=2"`
-	StartTime         *time.Time   `json:"start_time,omitempty"`
-	EndTime           *time.Time   `json:"end_time,omitempty"`
-	AuditorThreshold  int          `json:"auditor_threshold" binding:"required,min=1" example:"1"`
-	AuditorTotal      int          `json:"auditor_total" binding:"required,min=1" example:"2"`
-	OfficialThreshold int          `json:"official_threshold" binding:"required,min=1" example:"2"`
-	OfficialTotal     int          `json:"official_total" binding:"required,min=1" example:"3"`
+	Title                string              `json:"title" binding:"required" example:"Board Election 2024"`
+	Description          string              `json:"description" example:"Annual board member election"`
+	Options              []PollOption        `json:"options" binding:"required,min=2"`
+	StartTime            *time.Time          `json:"start_time,omitempty"`
+	EndTime              *time.Time          `json:"end_time,omitempty"`
+	AccessStructureType  AccessStructureType `json:"access_structure_type" binding:"required" example:"both"`
+	MinAuditorsRequired  int                 `json:"min_auditors_required" binding:"min=0" example:"1"`
+	MinOfficialsRequired int                 `json:"min_officials_required" binding:"min=0" example:"2"`
 }
 
 // UpdatePollRequest represents the request body for updating a poll.
@@ -186,6 +196,7 @@ type AuthResponse struct {
 	UserID string   `json:"user_id" example:"507f1f77bcf86cd799439011"`
 	Token  string   `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
 	Role   UserRole `json:"role" example:"voter"`
+	Username string `json:"username" example:"johndoe"`
 }
 
 // ErrorResponse represents an error response.
@@ -200,17 +211,22 @@ type MessageResponse struct {
 
 // PollResponse represents a poll in API responses.
 type PollResponse struct {
-	ID               string       `json:"id" example:"507f1f77bcf86cd799439011"`
-	Title            string       `json:"title" example:"Board Election 2024"`
-	Description      string       `json:"description" example:"Annual board member election"`
-	CreatorID        string       `json:"creator_id" example:"507f1f77bcf86cd799439011"`
-	Options          []PollOption `json:"options"`
-	Status           PollStatus   `json:"status" example:"open"`
-	StartTime        *time.Time   `json:"start_time,omitempty"`
-	EndTime          *time.Time   `json:"end_time,omitempty"`
-	BallotCommitment string       `json:"ballot_commitment,omitempty" example:"a1b2c3d4..."`
-	CreatedAt        string       `json:"created_at" example:"2024-01-15T10:30:00Z"`
-	UpdatedAt        string       `json:"updated_at" example:"2024-01-15T10:30:00Z"`
+	ID                   string              `json:"id" example:"507f1f77bcf86cd799439011"`
+	Title                string              `json:"title" example:"Board Election 2024"`
+	Description          string              `json:"description" example:"Annual board member election"`
+	CreatorID            string              `json:"creator_id" example:"507f1f77bcf86cd799439011"`
+	Options              []PollOption        `json:"options"`
+	Status               PollStatus          `json:"status" example:"open"`
+	StartTime            *time.Time          `json:"start_time,omitempty"`
+	EndTime              *time.Time          `json:"end_time,omitempty"`
+	AccessStructureType  AccessStructureType `json:"access_structure_type" example:"both"`
+	MinAuditorsRequired  int                 `json:"min_auditors_required" example:"1"`
+	MinOfficialsRequired int                 `json:"min_officials_required" example:"2"`
+	TotalAuditors        int                 `json:"total_auditors" example:"2"`
+	TotalOfficials       int                 `json:"total_officials" example:"3"`
+	BallotCommitment     string              `json:"ballot_commitment,omitempty" example:"a1b2c3d4..."`
+	CreatedAt            string              `json:"created_at" example:"2024-01-15T10:30:00Z"`
+	UpdatedAt            string              `json:"updated_at" example:"2024-01-15T10:30:00Z"`
 }
 
 // PollListResponse represents a list of polls.
@@ -275,11 +291,11 @@ type UserResponse struct {
 
 // ShareStatusResponse represents the status of share collection for a poll.
 type ShareStatusResponse struct {
-	PollID              string   `json:"poll_id" example:"507f1f77bcf86cd799439011"`
-	AuditorShares       int      `json:"auditor_shares" example:"1"`
-	AuditorThreshold    int      `json:"auditor_threshold" example:"1"`
-	OfficialShares      int      `json:"official_shares" example:"2"`
-	OfficialThreshold   int      `json:"official_threshold" example:"2"`
-	CanReveal           bool     `json:"can_reveal" example:"true"`
-	ContributedBy       []string `json:"contributed_by"`
+	PollID               string `json:"poll_id" example:"507f1f77bcf86cd799439011"`
+	AuditorShares        int    `json:"auditor_shares" example:"1"`
+	MinAuditorsRequired  int    `json:"min_auditors_required" example:"1"`
+	OfficialShares       int    `json:"official_shares" example:"2"`
+	MinOfficialsRequired int    `json:"min_officials_required" example:"2"`
+	CanReveal            bool   `json:"can_reveal" example:"true"`
+	ContributedBy        []string `json:"contributed_by"`
 }

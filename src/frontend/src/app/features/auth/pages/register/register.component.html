@@ -1,0 +1,131 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <h1>ShardVote</h1>
+      <p>Create Your Account</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          class="form-control"
+          [class.is-invalid]="username?.invalid && username?.touched"
+          formControlName="username"
+          placeholder="Choose a username"
+          [disabled]="isLoading"
+        />
+        <div class="invalid-feedback" *ngIf="username?.invalid && username?.touched">
+          <span *ngIf="username?.errors?.['required']">Username is required</span>
+          <span *ngIf="username?.errors?.['minlength']">Username must be at least 3 characters</span>
+          <span *ngIf="username?.errors?.['maxlength']">Username must be at most 20 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Select Your Role</label>
+        <div class="role-selector">
+          <div
+            *ngFor="let r of roles"
+            class="role-option"
+            [class.selected]="role?.value === r"
+            (click)="registerForm.patchValue({ role: r })"
+          >
+            <input
+              type="radio"
+              [id]="'role-' + r"
+              [value]="r"
+              formControlName="role"
+              class="role-radio"
+            />
+            <label [for]="'role-' + r" class="role-label">
+              <span class="role-name">{{ getRoleLabel(r) }}</span>
+              <span class="role-description">{{ getRoleDescription(r) }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-input-group">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            class="form-control"
+            [class.is-invalid]="password?.invalid && password?.touched"
+            formControlName="password"
+            placeholder="Create a password"
+            [disabled]="isLoading"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility('password')"
+            [disabled]="isLoading"
+          >
+            <mat-icon *ngIf="!showPassword()">visibility</mat-icon>
+            <mat-icon *ngIf="showPassword()">visibility_off</mat-icon>
+          </button>
+        </div>
+        <div class="invalid-feedback" *ngIf="password?.invalid && password?.touched">
+          <span *ngIf="password?.errors?.['required']">Password is required</span>
+          <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="password-input-group">
+          <input
+            id="confirmPassword"
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            class="form-control"
+            [class.is-invalid]="(confirmPassword?.invalid || registerForm.errors?.['passwordMismatch']) && confirmPassword?.touched"
+            formControlName="confirmPassword"
+            placeholder="Confirm your password"
+            [disabled]="isLoading"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility('confirmPassword')"
+            [disabled]="isLoading"
+          >
+            <mat-icon *ngIf="!showConfirmPassword()">visibility</mat-icon>
+            <mat-icon *ngIf="showConfirmPassword()">visibility_off</mat-icon>
+          </button>
+        </div>
+        <div class="invalid-feedback" *ngIf="confirmPassword?.touched">
+          <span *ngIf="confirmPassword?.errors?.['required']">Please confirm your password</span>
+          <span *ngIf="registerForm.errors?.['passwordMismatch']">Passwords do not match</span>
+        </div>
+      </div>
+
+      <div class="alert alert-danger" *ngIf="error" role="alert">
+        <div class="alert-content">
+          <span>{{ error }}</span>
+          <button type="button" class="btn-close" (click)="clearError()"></button>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="registerForm.invalid || isLoading"
+      >
+        <span *ngIf="!isLoading">Create Account</span>
+        <span *ngIf="isLoading">
+          <span class="spinner"></span>
+          Creating Account...
+        </span>
+      </button>
+    </form>
+
+    <div class="register-footer">
+      <p>Already have an account? <a routerLink="/auth/login">Sign in here</a></p>
+    </div>
+  </div>
+</div>

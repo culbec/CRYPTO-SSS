@@ -1,0 +1,354 @@
+.poll-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.poll-detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .btn-back {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    color: #2c3e50;
+    border: 1px solid #95a5a6;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #ecf0f1;
+      border-color: #34495e;
+    }
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #2c3e50;
+  }
+}
+
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-height: 300px;
+}
+
+.loading-state {
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  p {
+    margin-top: 1rem;
+    color: #7f8c8d;
+    font-size: 1rem;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-state {
+  .error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .error-message {
+    color: #e74c3c;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+}
+
+.poll-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.poll-header-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .poll-title-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #2c3e50;
+    }
+
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+
+      &.badge-draft {
+        background-color: #ecf0f1;
+        color: #7f8c8d;
+      }
+
+      &.badge-open {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      &.badge-closed {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      &.badge-frozen {
+        background-color: #cfe2ff;
+        color: #084298;
+      }
+
+      &.badge-revealed {
+        background-color: #d1e7dd;
+        color: #0f5132;
+      }
+    }
+  }
+
+  .poll-description {
+    margin: 0;
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+.poll-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 0.5rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #ecf0f1;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        font-weight: 600;
+        color: #34495e;
+      }
+
+      .value {
+        color: #555;
+      }
+    }
+
+    .access-summary {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-left: 3px solid #3498db;
+      color: #2c3e50;
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+  }
+}
+
+.options-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      border-left: 3px solid #3498db;
+
+      .option-icon {
+        color: #3498db;
+        font-weight: bold;
+      }
+
+      .option-label {
+        color: #2c3e50;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+.actions-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+  }
+
+  .action-group {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+
+    .action-description {
+      margin: 0 0 1rem 0;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: #2980b9;
+  }
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: #7f8c8d;
+  }
+
+  &:disabled {
+    background-color: #bdc3c7;
+  }
+}
+
+.both-structure {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.both-structure {
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.both-structure .line {
+  width: 100%;
+}
+
+.both-structure .and-separator {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #666;
+}

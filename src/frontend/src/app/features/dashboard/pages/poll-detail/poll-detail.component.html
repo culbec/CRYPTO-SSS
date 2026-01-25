@@ -1,0 +1,159 @@
+<div class="poll-detail-container">
+  <div class="poll-detail-header">
+    <button class="btn-back" (click)="goBack()">← Back to Polls</button>
+    <h1>Poll Configuration</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading poll details...</p>
+  </div>
+
+  <div *ngIf="error" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <p class="error-message">{{ error }}</p>
+    <button class="btn-secondary" (click)="goBack()">Back to Polls</button>
+  </div>
+
+  <div *ngIf="poll && !loading && !error" class="poll-detail-content">
+    <!-- Poll Header -->
+    <div class="poll-header-section">
+      <div class="poll-title-section">
+        <h2>{{ poll.title }}</h2>
+        <span [class]="'status-badge ' + getStatusBadgeClass()">{{ poll.status | uppercase }}</span>
+      </div>
+      <p class="poll-description">{{ poll.description }}</p>
+    </div>
+
+    <!-- Poll Details -->
+    <div class="poll-details-grid">
+      <div class="detail-card">
+        <h3>Poll Information</h3>
+        <div class="detail-row">
+          <span class="label">Status:</span>
+          <span class="value">{{ poll.status }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Created:</span>
+          <span class="value">{{ poll.created_at | date: 'short' }}</span>
+        </div>
+        <div class="detail-row" *ngIf="poll.start_time">
+          <span class="label">Starts:</span>
+          <span class="value">{{ poll.start_time | date: 'short' }}</span>
+        </div>
+        <div class="detail-row" *ngIf="poll.end_time">
+          <span class="label">Ends:</span>
+          <span class="value">{{ poll.end_time | date: 'short' }}</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h3>Access Structure</h3>
+        <div class="detail-row">
+          <span class="label">Reveal Requirements:</span>
+          <span class="value">
+            <ng-container [ngSwitch]="poll.access_structure_type">
+
+              <span *ngSwitchCase="'officials_only'">
+                Minimum <strong>{{ poll.min_officials_required }}</strong> officials
+              </span>
+
+              <span *ngSwitchCase="'auditors_only'">
+                Minimum <strong>{{ poll.min_auditors_required }}</strong> auditors
+              </span>
+
+              <span *ngSwitchCase="'both'" class="both-structure">
+                <div class="line">
+                  Minimum <strong>{{ poll.min_auditors_required }}</strong> auditors
+                </div>
+                <div class="and-separator">AND</div>
+                <div class="line">
+                  Minimum <strong>{{ poll.min_officials_required }}</strong> officials
+                </div>
+                </span>
+
+              <span *ngSwitchDefault>
+                Unknown access structure
+              </span>
+
+            </ng-container>
+          </span>
+        </div>
+        <div class="access-summary">
+          <strong>Rule:</strong>
+          <span *ngIf="poll.access_structure_type === 'officials_only'">
+            Only election officials can participate in result reveal
+          </span>
+          <span *ngIf="poll.access_structure_type === 'auditors_only'">
+            Only auditors can participate in result reveal
+          </span>
+          <span *ngIf="poll.access_structure_type === 'both'">
+            Both auditors AND officials must cooperate to reveal results
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Voting Options -->
+    <div class="options-section">
+      <h3>Voting Options</h3>
+      <div class="options-list">
+        <div *ngFor="let option of poll.options" class="option-item">
+          <span class="option-icon">▪</span>
+          <span class="option-label">{{ option.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-section">
+      <h3>Poll Actions</h3>
+      
+      <div *ngIf="poll.status === 'draft'" class="action-group">
+        <p class="action-description">Draft polls can be opened for voting.</p>
+        <div class="action-buttons">
+          <button 
+            class="btn-primary" 
+            (click)="openPollForVoting()"
+            [disabled]="updatingStatus"
+          >
+            {{ updatingStatus ? 'Opening...' : 'Open for Voting' }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="poll.status === 'open' && isManager" class="action-group">
+        <p class="action-description">Close the poll to stop accepting votes and distribute shares for decryption.</p>
+        <div class="action-buttons">
+          <button 
+            class="btn-primary" 
+            (click)="closePoll()"
+            [disabled]="updatingStatus"
+          >
+            {{ updatingStatus ? 'Closing...' : 'Close Poll' }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="poll.status === 'closed' && canContribute" class="action-group">
+        <p class="action-description">Poll is closed. Auditors and officials can now contribute shares to reveal results.</p>
+        <button 
+          class="btn-primary" 
+          routerLink="/dashboard/polls/{{ poll.id }}/share"
+        >
+          👥 Contribute Shares
+        </button>
+      </div>
+
+      <div *ngIf="poll.status === 'revealed'" class="action-group">
+        <p class="action-description">Results have been revealed.</p>
+        <button 
+          class="btn-primary" 
+          routerLink="/dashboard/polls/{{ poll.id }}/results"
+        >
+          📊 View Results
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+  <div class="share-container">
+      <div class="share-card">
+        <h1>{{ poll?.title }} - Share Contribution</h1>
+        <p class="subtitle">Frozen Poll - Result Reveal Phase</p>
+
+        <!-- Share Status -->
+        <div *ngIf="shareStatus" class="share-status-section">
+          <h2>Share Collection Status</h2>
+          <div class="status-grid">
+            <div class="status-item" *ngIf="poll?.access_structure_type === 'auditors_only' || poll?.access_structure_type === 'both'">
+              <h3>Auditors</h3>
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width.%]="(shareStatus.auditor_shares / shareStatus.min_auditors_required) * 100">
+                </div>
+              </div>
+              <p>{{ shareStatus.auditor_shares }}/{{ shareStatus.min_auditors_required }} shares</p>
+            </div>
+            <div class="status-item" *ngIf="poll?.access_structure_type === 'officials_only' || poll?.access_structure_type === 'both'">
+              <h3>Officials</h3>
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width.%]="(shareStatus.official_shares / shareStatus.min_officials_required) * 100">
+                </div>
+              </div>
+              <p>{{ shareStatus.official_shares }}/{{ shareStatus.min_officials_required }} shares</p>
+            </div>
+          </div>
+
+          <div class="contributors-list">
+            <h3>Contributed By:</h3>
+            <ul>
+              <li *ngFor="let contributor of shareStatus.contributed_by" class="contributor-badge">
+                {{ contributor }} <mat-icon aria-label="contributed">check</mat-icon>
+              </li>
+            </ul>
+          </div>
+
+          <div *ngIf="shareStatus.can_reveal" class="can-reveal-badge">
+            <p>Threshold met! Results can now be revealed.</p>
+          </div>
+        </div>
+
+        <!-- My Share Section -->
+        <div *ngIf="myShare && !shareContributed" class="share-section">
+          <h2>Your Share</h2>
+          <p class="share-info">
+            <strong>Group:</strong> {{ myShare.group_name }}<br>
+            <strong>Share Index:</strong> {{ myShare.share_index }}
+          </p>
+          <div class="share-value">
+            <p>
+              <strong>Share Value:</strong><br>
+              <code>{{ myShare.share_value.substring(0, 32) }}...{{ myShare.share_value.substring(myShare.share_value.length - 32) }}</code>
+            </p>
+          </div>
+          <button class="btn btn-primary" 
+                  (click)="contributeShare()"
+                  [disabled]="hasUserContributed()">
+            {{ hasUserContributed() ? 'Share Already Contributed' : 'Contribute My Share to Reveal Results' }}
+          </button>
+        </div>
+
+        <!-- Contributed Confirmation -->
+        <div *ngIf="shareContributed" class="share-contributed">
+          <h2>✓ Share Contributed</h2>
+          <p>Thank you! Your share has been submitted to participate in result reveal.</p>
+          <p *ngIf="shareStatus?.can_reveal" class="reveal-ready">
+            All required shares have been collected. Results can now be revealed.
+          </p>
+        </div>
+
+        <!-- No Share Section -->
+        <div *ngIf="!myShare && !shareContributed" class="no-share-section">
+          <p>You do not have a share for this poll.</p>
+          <p>Only auditors and officials receive shares when polls are frozen.</p>
+        </div>
+
+        <!-- Reveal Results Button -->
+        <div *ngIf="shareStatus?.can_reveal && poll?.status === 'closed'" class="reveal-section">
+          <h2>Reveal Results</h2>
+          <p>Threshold has been met. Click below to decrypt and reveal the final results.</p>
+          <button class="btn btn-success" (click)="revealResults()">
+            Reveal Final Results
+          </button>
+        </div>
+
+        <!-- Results Already Revealed -->
+        <div *ngIf="poll?.status === 'revealed'" class="results-revealed">
+          <h2>✓ Results Already Revealed</h2>
+          <p>Results have been successfully decrypted and published.</p>
+          <button class="btn btn-secondary" (click)="navigateToResults()">
+            View Detailed Results
+          </button>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="!poll || !shareStatus" class="loading-state">
+          <p>Loading poll information...</p>
+        </div>
+
+        <!-- Success Modal -->
+        <div *ngIf="showSuccessModal" class="modal-backdrop">
+          <div class="modal">
+            <h3>Success</h3>
+            <p>{{ successMessage }}</p>
+            <div class="modal-actions">
+              <button class="btn btn-primary" (click)="showSuccessModal = false">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div *ngIf="showErrorModal" class="modal-backdrop">
+          <div class="modal">
+            <h3>Error</h3>
+            <p>{{ errorModalMessage }}</p>
+            <div class="modal-actions">
+              <button class="btn btn-secondary" (click)="showErrorModal = false">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

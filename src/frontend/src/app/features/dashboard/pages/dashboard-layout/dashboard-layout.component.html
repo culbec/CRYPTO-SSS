@@ -1,0 +1,70 @@
+<div class="dashboard-container">
+
+  <!-- Sidebar retained for possible future use -->
+  <!--
+  <aside class="sidebar" [class.open]="sidebarOpen()">
+    <div class="sidebar-header">
+      <h2 class="logo">ShardVote</h2>
+      <button class="close-btn" (click)="closeSidebar()" *ngIf="!sidebarOpen()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li>
+          <a
+            routerLink="/dashboard/polls"
+            [class.active]="isActive('polls')"
+            (click)="closeSidebar()"
+          >
+            <span class="material-icons nav-icon">list_alt</span>
+            <span class="nav-text">Polls</span>
+          </a>
+        </li>
+        <li *ngIf="authService.hasRole('official')">
+          <a
+            routerLink="/dashboard/polls/create"
+            [class.active]="isActive('create')"
+            (click)="closeSidebar()"
+          >
+            <span class="material-icons nav-icon">add_circle</span>
+            <span class="nav-text">Create Poll</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="logout()">
+        <span class="material-icons">logout</span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" *ngIf="sidebarOpen()" (click)="closeSidebar()"></div>
+  -->
+
+  <div class="main-content">
+    <header class="dashboard-header">
+      <div class="brand">
+        <span class="material-icons logo-icon">how_to_vote</span>
+        <span class="logo-text">ShardVote</span>
+      </div>
+
+      <div class="user-section">
+        <span class="welcome-text">Welcome, {{ user?.username || 'User' }}</span>
+        <span class="user-role" [class]="'role-' + userRole">{{ userRole }}</span>
+        <button class="logout-btn" (click)="logout()">
+          <span class="material-icons">logout</span>
+          <span class="logout-text">Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -292,8 +292,8 @@ func (h *BallotHandler) ContributeShareHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, types.ErrorResponse{Error: "poll not found"})
 		return
 	}
-	if polls[0].Status != types.PollStatusFrozen {
-		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: "poll must be frozen to contribute shares"})
+	if polls[0].Status != types.PollStatusClosed {
+		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: "poll must be closed to contribute shares"})
 		return
 	}
 

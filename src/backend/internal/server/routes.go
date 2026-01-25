@@ -123,6 +123,12 @@ func (s *Server) registerPollRoutes(pollHandler *poll.PollHandler, authHandler *
 
 		// Get share status (all authenticated users)
 		polls.GET("/:id/share-status", jsonContentType(), pollHandler.GetShareStatusHandler)
+
+		// Reveal results (auditors and officials only)
+		polls.POST("/:id/reveal", jsonContentType(), auth.RequireRole(s.dbClient, types.RoleAuditor, types.RoleOfficial, types.RoleAdmin), pollHandler.RevealResultsHandler)
+
+		// Get poll results (all authenticated users)
+		polls.GET("/:id/results", jsonContentType(), pollHandler.GetPollResultsHandler)
 	}
 }
 
