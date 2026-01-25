@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { CreatePollRequest, PollOption } from '../../../../core/models/poll.model';
+import { CreatePollRequest } from '../../../../core/models/poll.model';
 
 @Component({
   selector: 'app-create-poll',
@@ -15,24 +15,28 @@ import { CreatePollRequest, PollOption } from '../../../../core/models/poll.mode
 export class CreatePollComponent {
   private http = inject(HttpClient);
   private router = inject(Router);
+  // TODO: move API-related calls to separate service classes
   private readonly baseUrl = 'http://localhost:3000/api';
   
-
-  poll: CreatePollRequest = {
-    title: '',
-    description: '',
-    options: [
-      { id: 'option_1', label: '' },
-      { id: 'option_2', label: '' }
-    ],
-    access_structure_type: 'both',
-    min_auditors_required: 1,
-    min_officials_required: 2
-  };
+  poll: CreatePollRequest = this.initialPollState();
 
   isSubmitting = false;
   errorMessage = '';
   showSuccessModal = false;
+
+  private initialPollState(): CreatePollRequest {
+    return {
+      title: '',
+      description: '',
+      options: [
+        { id: 'option_1', label: '' },
+        { id: 'option_2', label: '' }
+      ],
+      access_structure_type: 'both',
+      min_auditors_required: 1,
+      min_officials_required: 2
+    };
+  }
 
   addOption() {
     const newId = `option_${this.poll.options.length + 1}`;
@@ -48,14 +52,12 @@ export class CreatePollComponent {
   createPoll() {
     if (this.isSubmitting) return;
 
-    // Validate options have labels
     const hasEmptyOptions = this.poll.options.some(opt => !opt.label.trim());
     if (hasEmptyOptions) {
       this.errorMessage = 'All options must have a label';
       return;
     }
 
-    // Validate access structure requirements
     if (this.poll.access_structure_type === 'auditors_only' || this.poll.access_structure_type === 'both') {
       if (this.poll.min_auditors_required < 1) {
         this.errorMessage = 'Minimum auditors required must be at least 1';
@@ -77,8 +79,6 @@ export class CreatePollComponent {
         console.log('Poll created:', response);
         this.showSuccessModal = true;
         this.isSubmitting = false;
-        // Auto-redirect back to list after brief delay
-        setTimeout(() => this.goToPolls(), 2000);
       },
       error: (error) => {
         console.error('Failed to create poll', error);
@@ -88,10 +88,11 @@ export class CreatePollComponent {
     });
   }
 
-  cancel() {
-    this.router.navigate(['/dashboard/polls']);
+  createAnotherPoll() {
+    this.poll = this.initialPollState();
+    this.errorMessage = '';
+    this.showSuccessModal = false;
   }
-
 
   closeSuccessModal() {
     this.showSuccessModal = false;
@@ -99,6 +100,10 @@ export class CreatePollComponent {
 
   goToPolls() {
     this.showSuccessModal = false;
+    this.router.navigate(['/dashboard/polls']);
+  }
+
+  cancel() {
     this.router.navigate(['/dashboard/polls']);
   }
 }

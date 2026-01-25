@@ -64,8 +64,7 @@ export class VotingComponent implements OnInit {
   castVote() {
     if (!this.selectedOption || !this.poll) return;
 
-    // PLACEHOLDER: Encrypt the vote
-    // In production, use proper encryption (AES-256-GCM or NaCl)
+    // TODO: use proper encryption (AES-256-GCM or NaCl)
     const encryptedVote = btoa(JSON.stringify({
       option_id: this.selectedOption.id,
       voter_id: this.authService.user()?.id,

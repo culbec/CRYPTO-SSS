@@ -21,7 +21,6 @@ interface AuthState {
   providedIn: 'root'
 })
 export class AuthService {
-  // State signals
   private readonly state = signal<AuthState>({
     user: null,
     token: null,
@@ -151,7 +150,7 @@ export class AuthService {
 
     this.apiService.logout().subscribe({
       next: () => this.completeLogout(),
-      error: () => this.completeLogout() // Clear state even if API call fails
+      error: () => this.completeLogout()
     });
   }
 

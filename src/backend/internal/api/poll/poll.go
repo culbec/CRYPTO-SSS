@@ -1191,12 +1191,12 @@ func bigIntFromHex(hexStr string) *big.Int {
 
 // decryptBallot decodes a base64-encoded ballot and extracts the option_id
 // NOTE: This is a placeholder using base64 decoding instead of real encryption
-// TODO Replace with AES-256-GCM decryption using masterKey
+// TODO: Replace with AES-256-GCM decryption using masterKey
 func decryptBallot(encryptedVote string, masterKey []byte) (string, error) {
 	// Placeholder: Base64 decode the vote
 	// Frontend uses: btoa(JSON.stringify({option_id, voter_id, timestamp}))
 	
-	// For now, ignore masterKey (in production, use it for AES decryption)
+	// For now, ignore masterKey (will be used for AES decryption)
 	_ = masterKey
 	
 	// Decode base64

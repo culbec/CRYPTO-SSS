@@ -30,7 +30,6 @@ export class PollResultsComponent implements OnInit {
   }
 
   loadPollAndResults(pollId: string) {
-    // First load the poll details
     this.votingService.getPollById(pollId).subscribe({
       next: (poll) => {
         this.poll = poll;

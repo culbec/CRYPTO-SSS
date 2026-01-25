@@ -8,7 +8,6 @@ import { Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { roleGuardFactory } from './core/guards/role.guard';
 
-// Create a guard using the factory pattern
 const authGuard = () => {
   const authService = inject(AuthService);
   const router = inject(Router);

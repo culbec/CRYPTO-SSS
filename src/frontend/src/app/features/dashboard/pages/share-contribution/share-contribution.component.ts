@@ -26,7 +26,6 @@ export class ShareContributionComponent implements OnInit {
   error = '';
   currentUsername = '';
 
-  // Modals
   showSuccessModal = false;
   successMessage = '';
   showErrorModal = false;
@@ -66,7 +65,7 @@ export class ShareContributionComponent implements OnInit {
       },
       error: (err: any) => {
         if (err.status === 404) {
-          // User has no share - either poll not closed/distributed yet or user is not a participant
+          // User has no share: either poll not closed/distributed yet or user is not a participant
           this.error = 'You do not have a share for this poll. Only auditors and officials receive shares after the poll is closed and distribution runs.';
           console.log('No share assigned to this user for poll:', pollId);
         } else {

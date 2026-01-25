@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserRole, ROLE_LABELS, ROLE_DESCRIPTIONS } from '../../../../core/models/auth.model';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,8 +25,7 @@ export class RegisterComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+    private authService: AuthService  
   ) {
     this.initializeForm();
   }

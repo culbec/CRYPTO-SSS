@@ -157,10 +157,10 @@
   <div *ngIf="showSuccessModal" class="modal-backdrop">
     <div class="modal">
       <h3>✓ Poll Created</h3>
-      <p>Your poll was created successfully. Redirecting to the list...</p>
+      <p>Your poll was created successfully. What would you like to do next?</p>
       <div class="modal-actions">
         <button class="btn btn-primary" (click)="goToPolls()">Back to Polls</button>
-        <button class="btn btn-secondary" (click)="closeSuccessModal()">Stay Here</button>
+        <button class="btn btn-secondary" (click)="createAnotherPoll()">Create Another Poll</button>
       </div>
     </div>
   </div>
