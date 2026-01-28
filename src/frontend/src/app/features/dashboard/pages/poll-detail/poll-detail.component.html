@@ -1,6 +1,6 @@
 <div class="poll-detail-container">
   <div class="poll-detail-header">
-    <button class="btn-back" (click)="goBack()">← Back to Polls</button>
+    <button class="btn-back" (click)="goBack()"><mat-icon>arrow_back</mat-icon> Back to Polls</button>
     <h1>Poll Configuration</h1>
   </div>
 
@@ -10,7 +10,7 @@
   </div>
 
   <div *ngIf="error" class="error-state">
-    <div class="error-icon">⚠️</div>
+    <div class="error-icon"><mat-icon>error_outline</mat-icon></div>
     <p class="error-message">{{ error }}</p>
     <button class="btn-secondary" (click)="goBack()">Back to Polls</button>
   </div>
@@ -99,7 +99,7 @@
       <h3>Voting Options</h3>
       <div class="options-list">
         <div *ngFor="let option of poll.options" class="option-item">
-          <span class="option-icon">▪</span>
+          <mat-icon class="option-icon">circle</mat-icon>
           <span class="option-label">{{ option.label }}</span>
         </div>
       </div>
@@ -115,10 +115,15 @@
           <button 
             class="btn-primary" 
             (click)="openPollForVoting()"
-            [disabled]="updatingStatus"
+            [disabled]="updatingStatus || !canOpenPoll"
+            [title]="!canOpenPoll ? 'You need to be an official or admin to open polls' : ''"
           >
             {{ updatingStatus ? 'Opening...' : 'Open for Voting' }}
           </button>
+          <p *ngIf="!canOpenPoll" class="permission-warning">
+            <mat-icon class="warning-icon">info</mat-icon>
+            Only officials and admins can open polls for voting
+          </p>
         </div>
       </div>
 
@@ -141,7 +146,7 @@
           class="btn-primary" 
           routerLink="/dashboard/polls/{{ poll.id }}/share"
         >
-          👥 Contribute Shares
+          <mat-icon>group</mat-icon> Contribute Shares
         </button>
       </div>
 
@@ -151,7 +156,7 @@
           class="btn-primary" 
           routerLink="/dashboard/polls/{{ poll.id }}/results"
         >
-          📊 View Results
+          <mat-icon>bar_chart</mat-icon> View Results
         </button>
       </div>
     </div>

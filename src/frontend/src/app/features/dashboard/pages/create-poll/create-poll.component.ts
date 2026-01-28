@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
 import { CreatePollRequest } from '../../../../core/models/poll.model';
 
 @Component({
   selector: 'app-create-poll',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './create-poll.component.html',
   styleUrls: ['./create-poll.component.scss']
 })

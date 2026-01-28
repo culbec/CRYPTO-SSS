@@ -42,11 +42,11 @@ func (s *Server) setupRoutes() {
 	s.registerAuthRoutes(authHandler)
 
 	// Poll handlers
-	pollHandler := poll.NewPollHandler(s.dbClient)
+	pollHandler := poll.NewPollHandler(s.dbClient, s)
 	s.registerPollRoutes(pollHandler, authHandler)
 
 	// Ballot handlers
-	ballotHandler := ballot.NewBallotHandler(s.dbClient)
+	ballotHandler := ballot.NewBallotHandler(s.dbClient, s)
 	s.registerBallotRoutes(ballotHandler, authHandler)
 
 	// Admin handlers

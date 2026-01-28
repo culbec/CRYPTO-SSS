@@ -1,8 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { VotingService } from '../../../../core/services/voting.service';
+import { PollEventsService } from '../../../../core/services/poll-events.service';
 import { Poll, PollResultResponse } from '../../../../core/models/poll.model';
 
 @Component({
@@ -12,24 +15,43 @@ import { Poll, PollResultResponse } from '../../../../core/models/poll.model';
   templateUrl: './poll-results.component.html',
   styleUrls: ['./poll-results.component.scss'],
 })
-export class PollResultsComponent implements OnInit {
+export class PollResultsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private votingService = inject(VotingService);
   private router = inject(Router);
+  private eventsService = inject(PollEventsService);
+  private destroy$ = new Subject<void>();
 
   poll: Poll | null = null;
   pollResults: PollResultResponse | null = null;
   loading = true;
   error: string | null = null;
+  pollId = '';
 
   ngOnInit() {
-    const pollId = this.route.snapshot.paramMap.get('id');
-    if (pollId) {
-      this.loadPollAndResults(pollId);
+    this.pollId = this.route.snapshot.paramMap.get('id') || '';
+    if (this.pollId) {
+      this.loadPollAndResults(this.pollId);
+      this.setupRealtimeListeners();
     }
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupRealtimeListeners(): void {
+    // When results are revealed, automatically refresh the page
+    this.eventsService.onResultsRevealed(this.pollId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadPollAndResults(this.pollId);
+      });
+  }
+
   loadPollAndResults(pollId: string) {
+    this.loading = true;
     this.votingService.getPollById(pollId).subscribe({
       next: (poll) => {
         this.poll = poll;

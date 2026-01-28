@@ -203,6 +203,108 @@
       opacity: 0.9;
     }
 
+    // Special tie card styling
+    .tie-card {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border: 3px solid #f39c12;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 8px 20px rgba(243, 156, 18, 0.3);
+      animation: pulse-border 2s infinite;
+    }
+
+    @keyframes pulse-border {
+      0%, 100% {
+        border-color: #f39c12;
+        box-shadow: 0 8px 20px rgba(243, 156, 18, 0.3);
+      }
+      50% {
+        border-color: #e67e22;
+        box-shadow: 0 12px 30px rgba(243, 156, 18, 0.5);
+      }
+    }
+
+    .tie-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tie-icon {
+      color: #f39c12;
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    .tie-title {
+      margin: 0;
+      font-size: 32px;
+      font-weight: bold;
+      color: #e67e22;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .tie-description {
+      color: #856404;
+      font-size: 16px;
+      margin: 0 0 24px 0;
+    }
+
+    .tied-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .tied-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border-left: 4px solid #f39c12;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .tied-option:hover {
+      transform: translateX(4px);
+    }
+
+    .trophy-small {
+      color: #f39c12;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .option-name {
+      font-weight: 600;
+      font-size: 18px;
+      color: #333;
+      flex-grow: 1;
+    }
+
+    .option-votes {
+      color: #856404;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .tie-percentage {
+      color: #856404;
+      font-size: 14px;
+      margin: 8px 0 0 0;
+      font-style: italic;
+    }
+
     .verification-section {
       background: #f0f8ff;
       border-left: 4px solid #667eea;

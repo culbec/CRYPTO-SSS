@@ -191,6 +191,78 @@ textarea.form-control {
   margin-top: 16px;
 }
 
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .success-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: #28a745;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+  }
+
+  p {
+    margin: 0 0 24px 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+
+  .btn {
+    flex: 1;
+    padding: 12px 20px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
   .access-grid {
     grid-template-columns: 1fr;
@@ -202,5 +274,13 @@ textarea.form-control {
 
   .form-actions .btn {
     width: 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+    }
   }
 }

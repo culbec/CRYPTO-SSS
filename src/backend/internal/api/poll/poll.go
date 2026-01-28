@@ -25,12 +25,13 @@ import (
 
 // PollHandler handles poll-related API requests.
 type PollHandler struct {
-	db *mongo.Client
+	db     *mongo.Client
+	server interface{} // Server interface for emitting events
 }
 
 // NewPollHandler creates a new PollHandler instance.
-func NewPollHandler(db *mongo.Client) *PollHandler {
-	return &PollHandler{db: db}
+func NewPollHandler(db *mongo.Client, srv interface{}) *PollHandler {
+	return &PollHandler{db: db, server: srv}
 }
 
 // pollToResponse converts a Poll to PollResponse.
@@ -154,7 +155,18 @@ func (h *PollHandler) CreatePollHandler(ctx *gin.Context) {
 	}
 
 	poll.ID = *id
-	ctx.JSON(http.StatusCreated, pollToResponse(&poll))
+	response := pollToResponse(&poll)
+
+	// Emit WebSocket event for poll creation
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		server.EmitEvent("poll:created", gin.H{
+			"pollId":     id.Hex(),
+			"message":    "New poll created: " + poll.Title,
+			"pollTitle":  poll.Title,
+		})
+	}
+
+	ctx.JSON(http.StatusCreated, response)
 }
 
 // GetPollHandler godoc
@@ -352,6 +364,16 @@ func (h *PollHandler) UpdatePollStatusHandler(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(status, types.ErrorResponse{Error: err.Error()})
 		return
+	}
+
+	// Emit WebSocket event for poll status change
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		server.EmitEvent("poll:status-changed", gin.H{
+			"pollId":   pollID,
+			"newStatus": string(poll.Status),
+			"message":  "Poll status updated to " + string(poll.Status),
+			"pollTitle": poll.Title,
+		})
 	}
 
 	ctx.JSON(http.StatusOK, pollToResponse(poll))
@@ -601,6 +623,26 @@ func (h *PollHandler) FreezePollHandler(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: "failed to update poll"})
 		return
+	}
+
+	// Emit WebSocket events for poll status change and shares distributed
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		// First emit status change to all users
+		server.EmitEvent("poll:status-changed", gin.H{
+			"pollId":    pollID,
+			"newStatus": string(types.PollStatusClosed),
+			"pollTitle": poll.Title,
+			"message":   "Poll status updated to closed",
+		})
+
+		// Then emit shares distributed (frontend will filter by role)
+		server.EmitEvent("poll:shares-distributed", gin.H{
+			"pollId":        pollID,
+			"message":       "Poll closed and shares distributed",
+			"pollTitle":     poll.Title,
+			"auditorCount":  len(auditors),
+			"officialCount": len(officials),
+		})
 	}
 
 	ctx.JSON(http.StatusOK, types.MessageResponse{
@@ -1102,6 +1144,16 @@ func (h *PollHandler) RevealResultsHandler(ctx *gin.Context) {
 	)
 	if err != nil {
 		logger.Error("failed to update poll status", "error", err)
+	}
+
+	// Emit WebSocket event for results revealed
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		server.EmitEvent("poll:results-revealed", gin.H{
+			"pollId":     pollIDStr,
+			"message":    "Poll results have been revealed",
+			"pollTitle":  poll.Title,
+			"totalVotes": totalVotes,
+		})
 	}
 
 	ctx.JSON(http.StatusOK, types.PollResultResponse{
