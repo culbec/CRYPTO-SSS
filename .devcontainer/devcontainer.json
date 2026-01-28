@@ -14,6 +14,6 @@
         4200,
         27017
     ],
-    "postCreateCommand": "go mod tidy && go mod verify && npm ci",
-    "postStartCommand": "echo 'Use: \n- Backend component: <air -c .air.toml>\n- Frontend component: <ng serve>'"
+    "postCreateCommand": "cd /workspaces/crypto-sss/src/backend && go mod tidy && go mod verify && cd /workspaces/crypto-sss/src/frontend && npm ci",
+    "postStartCommand": "echo 'Use: \n- Backend component: <air -c .air.toml>\n- Frontend component: <npx ng serve>'"
 }

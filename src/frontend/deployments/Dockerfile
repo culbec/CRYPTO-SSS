@@ -18,10 +18,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends sudo && \
     echo "crypto ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/crypto && \
     chmod 0440 /etc/sudoers.d/crypto
 
+COPY src/frontend/deployments/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 WORKDIR /app
 
-RUN mkdir -p /app/logs \
-    && chmod -R 755 /app \
+RUN chmod -R 755 /app \
     && chown -R crypto:app /app
 
 USER crypto
