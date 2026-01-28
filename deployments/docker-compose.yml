@@ -23,6 +23,19 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  crypto-sss-frontend:
+    build:
+      context: ..
+      dockerfile: src/frontend/deployments/Dockerfile
+    container_name: crypto-sss-frontend
+    ports:
+      - "4200:4200"
+
+  crypto-sss:
+    depends_on:
+      - crypto-sss-backend
+      - crypto-sss-frontend
+
 volumes:
   mongo_data:
   backend_logs:

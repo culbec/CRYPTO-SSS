@@ -1,0 +1,19 @@
+{
+    "name": "crypto-sss",
+    "dockerComposeFile": "../deployments/docker-compose.yml",
+    "service": "crypto-sss",
+    "workspaceFolder": "/workspaces/crypto-sss",
+    "remoteUser": "crypto",
+    "updateRemoteUserUID": true,
+    "overrideCommand": true,
+    "mounts": [
+        "type=bind,source=${localWorkspaceFolder},target=/workspaces/crypto-sss,consistency=cached"
+    ],
+    "forwardPorts": [
+        3000,
+        4200,
+        27017
+    ],
+    "postCreateCommand": "go mod tidy && go mod verify && npm ci",
+    "postStartCommand": "echo 'Use: \n- Backend component: <air -c .air.toml>\n- Frontend component: <ng serve>'"
+}
