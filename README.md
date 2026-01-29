@@ -34,6 +34,16 @@ go build -o ./build # builds the binary in the "./build" directory
 go run ...executable_name... # runs the binary
 ```
 
+To regenerate the Swagger docs, execute the following commands.
+
+```cmd
+cd src/backend
+go install github.com/swaggo/swag/cmd/swag@latest
+swag init -g cmd/backend.go
+```
+
+You can change the init path `cmd/backend.go` to your relevant application entrypoint.
+
 ## Frontend
 
 TODO: frontend description

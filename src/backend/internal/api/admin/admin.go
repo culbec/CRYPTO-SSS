@@ -243,20 +243,20 @@ func (h *AdminHandler) SSSAccessStructureTestHandler(ctx *gin.Context) {
 		}
 	} else {
 		allShares, _ := as.GenerateShares()
-		
+
 		// Test valid combination
 		validShares := map[string][]*sss.AccessShare{
 			"auditors":  allShares["auditors"][:1],
 			"officials": allShares["officials"][:2],
 		}
 		canReconstructValid := as.CanReconstruct(validShares)
-		
+
 		// Test invalid - missing auditor
 		invalidShares1 := map[string][]*sss.AccessShare{
 			"officials": allShares["officials"][:2],
 		}
 		canReconstructInvalid1 := as.CanReconstruct(invalidShares1)
-		
+
 		// Test invalid - insufficient officials
 		invalidShares2 := map[string][]*sss.AccessShare{
 			"auditors":  allShares["auditors"][:1],
@@ -265,9 +265,9 @@ func (h *AdminHandler) SSSAccessStructureTestHandler(ctx *gin.Context) {
 		canReconstructInvalid2 := as.CanReconstruct(invalidShares2)
 
 		results["voting_scenario"] = map[string]interface{}{
-			"success":                     true,
-			"valid_combination_works":     canReconstructValid,
-			"missing_auditor_rejected":    !canReconstructInvalid1,
+			"success":                         true,
+			"valid_combination_works":         canReconstructValid,
+			"missing_auditor_rejected":        !canReconstructInvalid1,
 			"insufficient_officials_rejected": !canReconstructInvalid2,
 		}
 	}
@@ -277,7 +277,7 @@ func (h *AdminHandler) SSSAccessStructureTestHandler(ctx *gin.Context) {
 	shareSet3, _ := sss.Split(testSecret, 2, 3)
 	commitment := sss.ComputeShareCommitment(shareSet3.Shares[0])
 	verifyResult := sss.VerifyShareCommitment(shareSet3.Shares[0], commitment)
-	
+
 	// Tamper test
 	tamperedCommitment := make([]byte, len(commitment))
 	copy(tamperedCommitment, commitment)
@@ -285,9 +285,9 @@ func (h *AdminHandler) SSSAccessStructureTestHandler(ctx *gin.Context) {
 	tamperRejected := !sss.VerifyShareCommitment(shareSet3.Shares[0], tamperedCommitment)
 
 	results["commitment_verification"] = map[string]interface{}{
-		"success":             true,
-		"valid_commit_works":  verifyResult,
-		"tamper_rejected":     tamperRejected,
+		"success":            true,
+		"valid_commit_works": verifyResult,
+		"tamper_rejected":    tamperRejected,
 	}
 
 	// Test 4: OR access structure
@@ -303,9 +303,9 @@ func (h *AdminHandler) SSSAccessStructureTestHandler(ctx *gin.Context) {
 	onlyB := map[string][]*sss.AccessShare{"group_b": orShares["group_b"][:1]}
 
 	results["or_structure"] = map[string]interface{}{
-		"success":        true,
-		"group_a_alone":  asOR.CanReconstruct(onlyA),
-		"group_b_alone":  asOR.CanReconstruct(onlyB),
+		"success":       true,
+		"group_a_alone": asOR.CanReconstruct(onlyA),
+		"group_b_alone": asOR.CanReconstruct(onlyB),
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -321,7 +321,7 @@ func (h *AdminHandler) SSSAccessStructureTestHandler(ctx *gin.Context) {
 //	@Tags			admin
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			role	query		string	false	"Filter by role"
+//	@Param			role	query		string				false	"Filter by role"
 //	@Success		200		{array}		types.UserResponse	"List of users"
 //	@Failure		401		{object}	types.ErrorResponse	"Unauthorized"
 //	@Failure		403		{object}	types.ErrorResponse	"Forbidden - admin only"
@@ -388,14 +388,14 @@ func (h *AdminHandler) ListUsersHandler(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id		path		string					true	"User ID"
-//	@Param			role	query		string					true	"New role (voter, auditor, official, admin)"
-//	@Success		200		{object}	types.UserResponse		"Updated user"
-//	@Failure		400		{object}	types.ErrorResponse		"Invalid request"
-//	@Failure		401		{object}	types.ErrorResponse		"Unauthorized"
-//	@Failure		403		{object}	types.ErrorResponse		"Forbidden - admin only"
-//	@Failure		404		{object}	types.ErrorResponse		"User not found"
-//	@Failure		500		{object}	types.ErrorResponse		"Internal server error"
+//	@Param			id		path		string				true	"User ID"
+//	@Param			role	query		string				true	"New role (voter, auditor, official, admin)"
+//	@Success		200		{object}	types.UserResponse	"Updated user"
+//	@Failure		400		{object}	types.ErrorResponse	"Invalid request"
+//	@Failure		401		{object}	types.ErrorResponse	"Unauthorized"
+//	@Failure		403		{object}	types.ErrorResponse	"Forbidden - admin only"
+//	@Failure		404		{object}	types.ErrorResponse	"User not found"
+//	@Failure		500		{object}	types.ErrorResponse	"Internal server error"
 //	@Router			/api/admin/users/{id}/role [put]
 func (h *AdminHandler) UpdateUserRoleHandler(ctx *gin.Context) {
 	logger := logging.FromContext(ctx.Request.Context())

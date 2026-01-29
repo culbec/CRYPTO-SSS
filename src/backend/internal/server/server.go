@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/culbec/CRYPTO-sss/src/backend/internal"
+	"github.com/culbec/CRYPTO-sss/src/backend/internal/api/auth"
 	"github.com/culbec/CRYPTO-sss/src/backend/internal/logging"
 	"github.com/culbec/CRYPTO-sss/src/backend/internal/seeder"
 	ws "github.com/culbec/CRYPTO-sss/src/backend/internal/websocket"
@@ -71,28 +72,6 @@ func New(ctx context.Context, config *pkg.Config) (*Server, error) {
 	// Setup middleware
 	srv.setupMiddleware()
 
-	// WebSocket endpoint
-	srv.router.GET("/ws", func(c *gin.Context) {
-		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-		if err != nil {
-			logger.Error("WebSocket upgrade failed", "error", err)
-			return
-		}
-
-		clientID := uuid.New().String()
-		client := &ws.Client{
-			Hub:  srv.hub,
-			Conn: conn,
-			Send: make(chan []byte, 256),
-			ID:   clientID,
-		}
-
-		srv.hub.Register(client)
-
-		go client.WritePump()
-		go client.ReadPump()
-	})
-
 	srv.setupRoutes()
 
 	return srv, nil
@@ -125,6 +104,10 @@ func (s *Server) Shutdown() error {
 	logger := logging.FromContext(s.ctx)
 	logger.Info("Shutting down server...")
 
+	if s.hub != nil {
+		s.hub.Shutdown()
+	}
+
 	if s.dbClient != nil {
 		if err := mongo.Cleanup(s.ctx, s.dbClient); err != nil {
 			logger.Error("Error cleaning up the DB client", "error", err)
@@ -144,6 +127,34 @@ func (s *Server) Router() *gin.Engine {
 // Health returns a simple health check handler.
 func (s *Server) Health(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
+// registerWebSocket registers the /ws endpoint with auth middleware.
+func (s *Server) registerWebSocket(authHandler *auth.AuthHandler) {
+	s.router.GET("/ws", auth.RequireAuth(authHandler), s.handleWebSocket)
+}
+
+// handleWebSocket upgrades the HTTP connection to WebSocket and registers the client with the hub.
+func (s *Server) handleWebSocket(c *gin.Context) {
+	logger := logging.FromContext(s.ctx)
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		logger.Error("WebSocket upgrade failed", "error", err)
+		return
+	}
+
+	clientID := uuid.New().String()
+	client := &ws.Client{
+		Hub:  s.hub,
+		Conn: conn,
+		Send: make(chan []byte, 256),
+		ID:   clientID,
+	}
+
+	s.hub.Register(client)
+
+	go client.WritePump()
+	go client.ReadPump()
 }
 
 // EmitEvent broadcasts an event to all connected WebSocket clients.

@@ -53,6 +53,9 @@ func (s *Server) setupRoutes() {
 	adminHandler := admin.NewAdminHandler(s.dbClient)
 	s.registerAdminRoutes(adminHandler, authHandler)
 
+	// WebSocket endpoint (requires authentication)
+	s.registerWebSocket(authHandler)
+
 	logger.Info("Handlers prepared!")
 }
 
@@ -67,12 +70,12 @@ func (s *Server) setupSwagger() {
 	if port == "" {
 		port = "3000"
 	}
-	
+
 	// For 0.0.0.0, use localhost in Swagger docs
 	if host == "0.0.0.0" {
 		host = "localhost"
 	}
-	
+
 	docs.SwaggerInfo.Host = host + ":" + port
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 

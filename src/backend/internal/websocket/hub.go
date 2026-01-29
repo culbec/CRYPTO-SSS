@@ -18,12 +18,15 @@ type Client struct {
 
 // Hub maintains active WebSocket connections and broadcasts messages
 type Hub struct {
-	clients    map[*Client]bool
-	broadcast  chan *Message
-	register   chan *Client
-	unregister chan *Client
-	mu         sync.RWMutex
-	logger     *slog.Logger
+	clients      map[*Client]bool
+	broadcast    chan *Message
+	register     chan *Client
+	unregister   chan *Client
+	done         chan struct{} // closed to signal Run() to stop
+	stopped      chan struct{} // closed when Run() has returned
+	shutdownOnce sync.Once
+	mu           sync.RWMutex
+	logger       *slog.Logger
 }
 
 // Message represents a WebSocket message
@@ -39,6 +42,8 @@ func NewHub(logger *slog.Logger) *Hub {
 		broadcast:  make(chan *Message, 256),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
+		done:       make(chan struct{}),
+		stopped:    make(chan struct{}),
 		logger:     logger,
 	}
 }
@@ -53,10 +58,21 @@ func (h *Hub) Unregister(client *Client) {
 	h.unregister <- client
 }
 
-// Run starts the hub's main loop
+// Run starts the hub's main loop. It returns when Shutdown is called.
 func (h *Hub) Run() {
+	defer close(h.stopped)
 	for {
 		select {
+		case <-h.done:
+			h.mu.Lock()
+			for client := range h.clients {
+				close(client.Send)
+			}
+			h.clients = make(map[*Client]bool)
+			h.mu.Unlock()
+			h.logger.Info("WebSocket hub stopped")
+			return
+
 		case client := <-h.register:
 			h.mu.Lock()
 			h.clients[client] = true
@@ -74,25 +90,27 @@ func (h *Hub) Run() {
 
 		case message := <-h.broadcast:
 			h.logger.Info("Broadcasting WebSocket event", "event", message.Event, "clients", len(h.clients))
-			
+
 			messageBytes, err := json.Marshal(message)
 			if err != nil {
 				h.logger.Error("Failed to marshal message", "error", err)
 				continue
 			}
 
+			var toUnregister []*Client
 			h.mu.RLock()
 			for client := range h.clients {
 				select {
 				case client.Send <- messageBytes:
 					// Message sent successfully
 				default:
-					h.mu.RUnlock()
-					h.Unregister(client)
-					h.mu.RLock()
+					toUnregister = append(toUnregister, client)
 				}
 			}
 			h.mu.RUnlock()
+			for _, client := range toUnregister {
+				h.Unregister(client)
+			}
 			h.logger.Info("Broadcast complete", "event", message.Event)
 		}
 	}
@@ -104,6 +122,16 @@ func (h *Hub) Emit(event string, data interface{}) {
 		Event: event,
 		Data:  data,
 	}
+}
+
+// Shutdown signals the hub to stop and blocks until Run has returned.
+// All client Send channels are closed so WritePump goroutines exit.
+// Idempotent: later calls block until the first shutdown completes.
+func (h *Hub) Shutdown() {
+	h.shutdownOnce.Do(func() {
+		close(h.done)
+		<-h.stopped
+	})
 }
 
 // ClientCount returns the number of connected clients
@@ -137,19 +165,12 @@ func (c *Client) WritePump() {
 		c.Conn.Close()
 	}()
 
-	for {
-		select {
-		case message, ok := <-c.Send:
-			if !ok {
-				// Hub closed the channel
-				c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
-				return
-			}
-
-			if err := c.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
-				c.Hub.logger.Error("WebSocket write error", "error", err, "client", c.ID)
-				return
-			}
+	for message := range c.Send {
+		if err := c.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
+			c.Hub.logger.Error("WebSocket write error", "error", err, "client", c.ID)
+			return
 		}
 	}
+	// Hub closed the channel
+	c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 }

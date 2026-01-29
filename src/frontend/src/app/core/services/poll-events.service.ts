@@ -38,14 +38,14 @@ export class PollEventsService {
   private setupEventListeners(): void {
     // Poll created event
     this.websocket.on('poll:created').subscribe((data: any) => {
-      console.log('📡 Received poll:created event', data);
+      console.log('Received poll:created event', data);
       this.notification.info(`New poll created: "${data.pollTitle || 'Poll'}"`);
       this.pollCreatedSubject.next();
     });
 
     // Poll status changed event
     this.websocket.on('poll:status-changed').subscribe((data: any) => {
-      console.log('📡 Received poll:status-changed event', data);
+      console.log('Received poll:status-changed event', data);
       const pollTitle = data.pollTitle || 'Poll';
       const statusMessages: Record<string, string> = {
         open: `"${pollTitle}" is now open for voting`,

@@ -42,25 +42,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Access structure test results",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse"
+                            "$ref": "#/definitions/types.MessageResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden - admin only",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -91,7 +91,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.SSSTestRequest"
+                            "$ref": "#/definitions/types.SSSTestRequest"
                         }
                     }
                 ],
@@ -99,31 +99,31 @@ const docTemplate = `{
                     "200": {
                         "description": "SSS test results",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.SSSTestResponse"
+                            "$ref": "#/definitions/types.SSSTestResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden - admin only",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -158,26 +158,26 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserResponse"
+                                "$ref": "#/definitions/types.UserResponse"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden - admin only",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -221,37 +221,37 @@ const docTemplate = `{
                     "200": {
                         "description": "Updated user",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserResponse"
+                            "$ref": "#/definitions/types.UserResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden - admin only",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -277,39 +277,39 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.LoginRequest"
+                            "$ref": "#/definitions/types.LoginRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful login with user ID and JWT token",
+                        "description": "Successful login with relevant authentication response",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.AuthResponse"
+                            "$ref": "#/definitions/types.AuthResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Invalid password",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -337,19 +337,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful logout",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse"
+                            "$ref": "#/definitions/types.MessageResponse"
                         }
                     },
                     "400": {
                         "description": "Missing or invalid authorization header",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Token blacklisted or invalid",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -375,33 +375,33 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.RegisterRequest"
+                            "$ref": "#/definitions/types.RegisterRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Successful registration with user ID and JWT token",
+                        "description": "Successful registration with relevant authentication response",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.AuthResponse"
+                            "$ref": "#/definitions/types.AuthResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "409": {
                         "description": "User already exists",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -429,19 +429,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Token is valid",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse"
+                            "$ref": "#/definitions/types.MessageResponse"
                         }
                     },
                     "400": {
                         "description": "Missing or invalid authorization header",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Token blacklisted or invalid",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -472,7 +472,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.CastBallotRequest"
+                            "$ref": "#/definitions/types.CastBallotRequest"
                         }
                     }
                 ],
@@ -480,37 +480,37 @@ const docTemplate = `{
                     "201": {
                         "description": "Ballot cast successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.BallotResponse"
+                            "$ref": "#/definitions/types.BallotResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request or poll not open",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Already voted or not a voter",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Poll not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -541,7 +541,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ContributeShareRequest"
+                            "$ref": "#/definitions/types.ContributeShareRequest"
                         }
                     }
                 ],
@@ -549,37 +549,37 @@ const docTemplate = `{
                     "200": {
                         "description": "Share contributed",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse"
+                            "$ref": "#/definitions/types.MessageResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Not authorized to contribute",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "No share found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -613,31 +613,31 @@ const docTemplate = `{
                     "200": {
                         "description": "Ballot receipt",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.BallotResponse"
+                            "$ref": "#/definitions/types.BallotResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid poll ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Ballot not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -670,19 +670,19 @@ const docTemplate = `{
                     "200": {
                         "description": "List of polls",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollListResponse"
+                            "$ref": "#/definitions/types.PollListResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -711,7 +711,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.CreatePollRequest"
+                            "$ref": "#/definitions/types.CreatePollRequest"
                         }
                     }
                 ],
@@ -719,31 +719,31 @@ const docTemplate = `{
                     "201": {
                         "description": "Poll created successfully",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse"
+                            "$ref": "#/definitions/types.PollResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request body",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden - insufficient permissions",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -777,31 +777,31 @@ const docTemplate = `{
                     "200": {
                         "description": "Poll found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse"
+                            "$ref": "#/definitions/types.PollResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid poll ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Poll not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -835,37 +835,37 @@ const docTemplate = `{
                     "200": {
                         "description": "Poll frozen and shares distributed",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse"
+                            "$ref": "#/definitions/types.MessageResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request or poll state",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Poll not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -899,31 +899,153 @@ const docTemplate = `{
                     "200": {
                         "description": "Share retrieved",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ShareDistributionResponse"
+                            "$ref": "#/definitions/types.ShareDistributionResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid poll ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "No share found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/polls/{id}/results": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieves the revealed results of a poll. Only available for revealed polls.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "polls"
+                ],
+                "summary": "Get poll results",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Poll ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Poll results",
+                        "schema": {
+                            "$ref": "#/definitions/types.PollResultResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid poll ID",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Poll or results not found",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/polls/{id}/reveal": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Reconstructs the master key from contributed shares and decrypts ballots to reveal results.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "polls"
+                ],
+                "summary": "Reveal poll results",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Poll ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Results revealed",
+                        "schema": {
+                            "$ref": "#/definitions/types.PollResultResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request or insufficient shares",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Poll not found",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -957,31 +1079,31 @@ const docTemplate = `{
                     "200": {
                         "description": "Share status",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ShareStatusResponse"
+                            "$ref": "#/definitions/types.ShareStatusResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid poll ID",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Poll not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -1019,7 +1141,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UpdatePollStatusRequest"
+                            "$ref": "#/definitions/types.UpdatePollStatusRequest"
                         }
                     }
                 ],
@@ -1027,37 +1149,37 @@ const docTemplate = `{
                     "200": {
                         "description": "Poll status updated",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse"
+                            "$ref": "#/definitions/types.PollResponse"
                         }
                     },
                     "400": {
                         "description": "Invalid request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Poll not found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse"
+                            "$ref": "#/definitions/types.ErrorResponse"
                         }
                     }
                 }
@@ -1065,7 +1187,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.AccessTestResult": {
+        "types.AccessStructureType": {
+            "type": "string",
+            "enum": [
+                "officials_only",
+                "auditors_only",
+                "both"
+            ],
+            "x-enum-varnames": [
+                "AccessStructureOfficialsOnly",
+                "AccessStructureAuditorsOnly",
+                "AccessStructureBoth"
+            ]
+        },
+        "types.AccessTestResult": {
             "type": "object",
             "properties": {
                 "auditor_group": {
@@ -1090,13 +1225,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.AuthResponse": {
+        "types.AuthResponse": {
             "type": "object",
             "properties": {
                 "role": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserRole"
+                            "$ref": "#/definitions/types.UserRole"
                         }
                     ],
                     "example": "voter"
@@ -1108,10 +1243,14 @@ const docTemplate = `{
                 "user_id": {
                     "type": "string",
                     "example": "507f1f77bcf86cd799439011"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "johndoe"
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.BallotResponse": {
+        "types.BallotResponse": {
             "type": "object",
             "properties": {
                 "cast_at": {
@@ -1132,7 +1271,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.CastBallotRequest": {
+        "types.CastBallotRequest": {
             "type": "object",
             "required": [
                 "encrypted_vote",
@@ -1149,7 +1288,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.ContributeShareRequest": {
+        "types.ContributeShareRequest": {
             "type": "object",
             "required": [
                 "poll_id",
@@ -1166,26 +1305,21 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.CreatePollRequest": {
+        "types.CreatePollRequest": {
             "type": "object",
             "required": [
-                "auditor_threshold",
-                "auditor_total",
-                "official_threshold",
-                "official_total",
+                "access_structure_type",
                 "options",
                 "title"
             ],
             "properties": {
-                "auditor_threshold": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "example": 1
-                },
-                "auditor_total": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "example": 2
+                "access_structure_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.AccessStructureType"
+                        }
+                    ],
+                    "example": "both"
                 },
                 "description": {
                     "type": "string",
@@ -1194,21 +1328,21 @@ const docTemplate = `{
                 "end_time": {
                     "type": "string"
                 },
-                "official_threshold": {
+                "min_auditors_required": {
                     "type": "integer",
-                    "minimum": 1,
-                    "example": 2
+                    "minimum": 0,
+                    "example": 1
                 },
-                "official_total": {
+                "min_officials_required": {
                     "type": "integer",
-                    "minimum": 1,
-                    "example": 3
+                    "minimum": 0,
+                    "example": 2
                 },
                 "options": {
                     "type": "array",
                     "minItems": 2,
                     "items": {
-                        "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollOption"
+                        "$ref": "#/definitions/types.PollOption"
                     }
                 },
                 "start_time": {
@@ -1220,7 +1354,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.ErrorResponse": {
+        "types.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -1229,7 +1363,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.LoginRequest": {
+        "types.LoginRequest": {
             "type": "object",
             "required": [
                 "password",
@@ -1246,7 +1380,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.MessageResponse": {
+        "types.MessageResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -1255,13 +1389,13 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollListResponse": {
+        "types.PollListResponse": {
             "type": "object",
             "properties": {
                 "polls": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse"
+                        "$ref": "#/definitions/types.PollResponse"
                     }
                 },
                 "total": {
@@ -1270,7 +1404,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollOption": {
+        "types.PollOption": {
             "type": "object",
             "properties": {
                 "id": {
@@ -1283,9 +1417,17 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollResponse": {
+        "types.PollResponse": {
             "type": "object",
             "properties": {
+                "access_structure_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.AccessStructureType"
+                        }
+                    ],
+                    "example": "both"
+                },
                 "ballot_commitment": {
                     "type": "string",
                     "example": "a1b2c3d4..."
@@ -1309,10 +1451,18 @@ const docTemplate = `{
                     "type": "string",
                     "example": "507f1f77bcf86cd799439011"
                 },
+                "min_auditors_required": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "min_officials_required": {
+                    "type": "integer",
+                    "example": 2
+                },
                 "options": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollOption"
+                        "$ref": "#/definitions/types.PollOption"
                     }
                 },
                 "start_time": {
@@ -1321,7 +1471,7 @@ const docTemplate = `{
                 "status": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollStatus"
+                            "$ref": "#/definitions/types.PollStatus"
                         }
                     ],
                     "example": "open"
@@ -1330,30 +1480,60 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Board Election 2024"
                 },
+                "total_auditors": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "total_officials": {
+                    "type": "integer",
+                    "example": 3
+                },
                 "updated_at": {
                     "type": "string",
                     "example": "2024-01-15T10:30:00Z"
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollStatus": {
+        "types.PollResultResponse": {
+            "type": "object",
+            "properties": {
+                "poll_id": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
+                },
+                "results": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "revealed_at": {
+                    "type": "string",
+                    "example": "2024-01-20T15:00:00Z"
+                },
+                "total_votes": {
+                    "type": "integer",
+                    "example": 150
+                }
+            }
+        },
+        "types.PollStatus": {
             "type": "string",
             "enum": [
                 "draft",
                 "open",
                 "closed",
-                "frozen",
                 "revealed"
             ],
             "x-enum-varnames": [
                 "PollStatusDraft",
                 "PollStatusOpen",
                 "PollStatusClosed",
-                "PollStatusFrozen",
                 "PollStatusRevealed"
             ]
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.RegisterRequest": {
+        "types.RegisterRequest": {
             "type": "object",
             "required": [
                 "password",
@@ -1368,7 +1548,7 @@ const docTemplate = `{
                 "role": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserRole"
+                            "$ref": "#/definitions/types.UserRole"
                         }
                     ],
                     "example": "voter"
@@ -1379,7 +1559,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.SSSTestRequest": {
+        "types.SSSTestRequest": {
             "type": "object",
             "required": [
                 "secret",
@@ -1403,11 +1583,11 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.SSSTestResponse": {
+        "types.SSSTestResponse": {
             "type": "object",
             "properties": {
                 "access_structure_test": {
-                    "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.AccessTestResult"
+                    "$ref": "#/definitions/types.AccessTestResult"
                 },
                 "match": {
                     "type": "boolean",
@@ -1447,7 +1627,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.ShareDistributionResponse": {
+        "types.ShareDistributionResponse": {
             "type": "object",
             "properties": {
                 "commitment": {
@@ -1472,14 +1652,10 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.ShareStatusResponse": {
+        "types.ShareStatusResponse": {
             "type": "object",
             "properties": {
                 "auditor_shares": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "auditor_threshold": {
                     "type": "integer",
                     "example": 1
                 },
@@ -1493,11 +1669,15 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "official_shares": {
+                "min_auditors_required": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "min_officials_required": {
                     "type": "integer",
                     "example": 2
                 },
-                "official_threshold": {
+                "official_shares": {
                     "type": "integer",
                     "example": 2
                 },
@@ -1507,7 +1687,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.UpdatePollStatusRequest": {
+        "types.UpdatePollStatusRequest": {
             "type": "object",
             "required": [
                 "status"
@@ -1516,14 +1696,14 @@ const docTemplate = `{
                 "status": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.PollStatus"
+                            "$ref": "#/definitions/types.PollStatus"
                         }
                     ],
                     "example": "open"
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserResponse": {
+        "types.UserResponse": {
             "type": "object",
             "properties": {
                 "date": {
@@ -1537,7 +1717,7 @@ const docTemplate = `{
                 "role": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserRole"
+                            "$ref": "#/definitions/types.UserRole"
                         }
                     ],
                     "example": "voter"
@@ -1548,7 +1728,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_culbec_CRYPTO-sss_src_backend_internal_types.UserRole": {
+        "types.UserRole": {
             "type": "string",
             "enum": [
                 "voter",
