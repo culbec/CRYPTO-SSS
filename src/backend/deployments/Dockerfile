@@ -41,17 +41,17 @@ FROM golang:1.25-bookworm AS runtime
 
 LABEL maintainer="Alexandru 'culbec' Profir <profir.alexx@gmail.com>"
 
-# Redirect Go paths to backend user's home to avoid permission issues
-ENV GOPATH=/home/backend/go \
-    GOMODCACHE=/home/backend/go/pkg/mod \
-    PATH="/home/backend/go/bin:${PATH}"
+# Redirect Go paths to crypto user's home to avoid permission issues
+ENV GOPATH=/home/crypto/go \
+    GOMODCACHE=/home/crypto/go/pkg/mod \
+    PATH="/home/crypto/go/bin:${PATH}"
 
 RUN apt-get update && apt-get install -y --no-install-recommends sudo && \
     rm -rf /var/lib/apt/lists/* && \
-    groupadd --system app && useradd --system --gid app --shell /bin/bash --create-home backend && \
-    echo "backend ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/backend && \
-    chmod 0440 /etc/sudoers.d/backend && \
-    su backend -c "go install github.com/air-verse/air@latest"
+    groupadd --system app && useradd --system --gid app --shell /bin/bash --create-home crypto && \
+    echo "crypto ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/crypto && \
+    chmod 0440 /etc/sudoers.d/crypto && \
+    su crypto -c "go install github.com/air-verse/air@latest"
 
 WORKDIR /app
 
@@ -61,10 +61,10 @@ COPY src/backend/deployments/entrypoint.sh /app/entrypoint.sh
 
 # Default logging path is logs/backend.log; ensure directory exists and is writable.
 RUN mkdir -p /app/logs \
-    && chmod 755 /app /app/configs /app/logs /app/entrypoint.sh \
-    && chown -R backend:app /app
+    && chmod -R 755 /app \
+    && chown -R crypto:app /app
 
-USER backend
+USER crypto
 
 EXPOSE 3000
 
