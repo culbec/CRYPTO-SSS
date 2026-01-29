@@ -1,8 +1,8 @@
 // Package auth provides authentication handlers for the API.
 //
-// @title Authentication API
-// @version 1.0
-// @description Authentication endpoints for user login, registration, and logout.
+//	@title			Authentication API
+//	@version		1.0
+//	@description	Authentication endpoints for user login, registration, and logout.
 package auth
 
 import (
@@ -69,7 +69,7 @@ func (t *tokenManager) isBlacklisted(token string) bool {
 
 	// opportunistic cleanup
 	t.blacklistMutex.Lock()
-	if exp2, ok2 := t.tokenBlacklist[token]; ok2  && !now.Before(exp2) {
+	if exp2, ok2 := t.tokenBlacklist[token]; ok2 && !now.Before(exp2) {
 		delete(t.tokenBlacklist, token)
 	}
 	t.blacklistMutex.Unlock()
@@ -148,7 +148,7 @@ func (a *AuthHandler) ValidateToken(ctx *gin.Context) (string, error) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			request	body		types.LoginRequest	true	"Login credentials"
-//	@Success		200		{object}	types.AuthResponse	"Successful login with user ID and JWT token"
+//	@Success		200		{object}	types.AuthResponse	"Successful login with relevant authentication response"
 //	@Failure		400		{object}	types.ErrorResponse	"Invalid request body"
 //	@Failure		401		{object}	types.ErrorResponse	"Invalid password"
 //	@Failure		404		{object}	types.ErrorResponse	"User not found"
@@ -278,7 +278,7 @@ func (a *AuthHandler) LogoutHandler(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			request	body		types.RegisterRequest	true	"Registration details"
-//	@Success		201		{object}	types.AuthResponse		"Successful registration with user ID and JWT token"
+//	@Success		201		{object}	types.AuthResponse		"Successful registration with relevant authentication response"
 //	@Failure		400		{object}	types.ErrorResponse		"Invalid request body"
 //	@Failure		409		{object}	types.ErrorResponse		"User already exists"
 //	@Failure		500		{object}	types.ErrorResponse		"Internal server error"

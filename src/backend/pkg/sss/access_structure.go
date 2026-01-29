@@ -28,10 +28,10 @@ var (
 // ParticipantGroup represents a group of participants with a threshold requirement.
 // For example: "election_officials" group requiring 2 of 3 to participate.
 type ParticipantGroup struct {
-	Name       string   // Unique identifier for the group
-	Threshold  int      // Minimum participants required from this group
-	Total      int      // Total participants in this group
-	ShareSet   *ShareSet // The shares for this group
+	Name      string    // Unique identifier for the group
+	Threshold int       // Minimum participants required from this group
+	Total     int       // Total participants in this group
+	ShareSet  *ShareSet // The shares for this group
 }
 
 // AccessNode represents a node in the access structure tree.
@@ -57,16 +57,16 @@ const (
 
 // AccessStructure defines the complete access control policy.
 type AccessStructure struct {
-	Groups     map[string]*ParticipantGroup // All participant groups
-	Root       *AccessNode                  // Root of the access tree
-	MasterKey  []byte                       // The master secret being protected
-	GroupKeys  map[string][]byte            // Intermediate keys for each group
+	Groups    map[string]*ParticipantGroup // All participant groups
+	Root      *AccessNode                  // Root of the access tree
+	MasterKey []byte                       // The master secret being protected
+	GroupKeys map[string][]byte            // Intermediate keys for each group
 }
 
 // AccessShare represents a share held by a participant in a specific group.
 type AccessShare struct {
-	GroupName string   // The group this share belongs to
-	Share     *Share   // The actual SSS share
+	GroupName string // The group this share belongs to
+	Share     *Share // The actual SSS share
 }
 
 // NewAccessStructure creates a new access structure with the specified master secret.

@@ -25,12 +25,13 @@ import (
 
 // PollHandler handles poll-related API requests.
 type PollHandler struct {
-	db *mongo.Client
+	db     *mongo.Client
+	server interface{} // Server interface for emitting events
 }
 
 // NewPollHandler creates a new PollHandler instance.
-func NewPollHandler(db *mongo.Client) *PollHandler {
-	return &PollHandler{db: db}
+func NewPollHandler(db *mongo.Client, srv interface{}) *PollHandler {
+	return &PollHandler{db: db, server: srv}
 }
 
 // pollToResponse converts a Poll to PollResponse.
@@ -154,7 +155,18 @@ func (h *PollHandler) CreatePollHandler(ctx *gin.Context) {
 	}
 
 	poll.ID = *id
-	ctx.JSON(http.StatusCreated, pollToResponse(&poll))
+	response := pollToResponse(&poll)
+
+	// Emit WebSocket event for poll creation
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		server.EmitEvent("poll:created", gin.H{
+			"pollId":    id.Hex(),
+			"message":   "New poll created: " + poll.Title,
+			"pollTitle": poll.Title,
+		})
+	}
+
+	ctx.JSON(http.StatusCreated, response)
 }
 
 // GetPollHandler godoc
@@ -354,6 +366,16 @@ func (h *PollHandler) UpdatePollStatusHandler(ctx *gin.Context) {
 		return
 	}
 
+	// Emit WebSocket event for poll status change
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		server.EmitEvent("poll:status-changed", gin.H{
+			"pollId":    pollID,
+			"newStatus": string(poll.Status),
+			"message":   "Poll status updated to " + string(poll.Status),
+			"pollTitle": poll.Title,
+		})
+	}
+
 	ctx.JSON(http.StatusOK, pollToResponse(poll))
 }
 
@@ -364,13 +386,13 @@ func (h *PollHandler) UpdatePollStatusHandler(ctx *gin.Context) {
 //	@Tags			polls
 //	@Produce		json
 //	@Security		BearerAuth
-//	@Param			id	path		string							true	"Poll ID"
-//	@Success		200	{object}	types.MessageResponse			"Poll frozen and shares distributed"
-//	@Failure		400	{object}	types.ErrorResponse				"Invalid request or poll state"
-//	@Failure		401	{object}	types.ErrorResponse				"Unauthorized"
-//	@Failure		403	{object}	types.ErrorResponse				"Forbidden"
-//	@Failure		404	{object}	types.ErrorResponse				"Poll not found"
-//	@Failure		500	{object}	types.ErrorResponse				"Internal server error"
+//	@Param			id	path		string					true	"Poll ID"
+//	@Success		200	{object}	types.MessageResponse	"Poll frozen and shares distributed"
+//	@Failure		400	{object}	types.ErrorResponse		"Invalid request or poll state"
+//	@Failure		401	{object}	types.ErrorResponse		"Unauthorized"
+//	@Failure		403	{object}	types.ErrorResponse		"Forbidden"
+//	@Failure		404	{object}	types.ErrorResponse		"Poll not found"
+//	@Failure		500	{object}	types.ErrorResponse		"Internal server error"
 //	@Router			/api/polls/{id}/freeze [post]
 func (h *PollHandler) FreezePollHandler(ctx *gin.Context) {
 	logger := logging.FromContext(ctx.Request.Context())
@@ -451,7 +473,7 @@ func (h *PollHandler) FreezePollHandler(ctx *gin.Context) {
 	// Validate that we have enough users based on access structure type
 	var accessStruct *sss.AccessStructure
 	var allShares map[string][]*sss.AccessShare
-	
+
 	switch poll.AccessStructureType {
 	case types.AccessStructureOfficialsOnly:
 		if len(officials) < poll.MinOfficialsRequired {
@@ -475,7 +497,7 @@ func (h *PollHandler) FreezePollHandler(ctx *gin.Context) {
 			}
 		}
 		allShares["officials"] = officialShares
-		
+
 	case types.AccessStructureAuditorsOnly:
 		if len(auditors) < poll.MinAuditorsRequired {
 			ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: "not enough auditors to meet minimum required"})
@@ -498,7 +520,7 @@ func (h *PollHandler) FreezePollHandler(ctx *gin.Context) {
 			}
 		}
 		allShares["auditors"] = auditorShares
-		
+
 	case types.AccessStructureBoth:
 		if len(auditors) < poll.MinAuditorsRequired {
 			ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: "not enough auditors to meet minimum required"})
@@ -525,7 +547,7 @@ func (h *PollHandler) FreezePollHandler(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: "failed to generate shares"})
 			return
 		}
-		
+
 	default:
 		ctx.JSON(http.StatusBadRequest, types.ErrorResponse{Error: "invalid access structure type"})
 		return
@@ -601,6 +623,26 @@ func (h *PollHandler) FreezePollHandler(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: "failed to update poll"})
 		return
+	}
+
+	// Emit WebSocket events for poll status change and shares distributed
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		// First emit status change to all users
+		server.EmitEvent("poll:status-changed", gin.H{
+			"pollId":    pollID,
+			"newStatus": string(types.PollStatusClosed),
+			"pollTitle": poll.Title,
+			"message":   "Poll status updated to closed",
+		})
+
+		// Then emit shares distributed (frontend will filter by role)
+		server.EmitEvent("poll:shares-distributed", gin.H{
+			"pollId":        pollID,
+			"message":       "Poll closed and shares distributed",
+			"pollTitle":     poll.Title,
+			"auditorCount":  len(auditors),
+			"officialCount": len(officials),
+		})
 	}
 
 	ctx.JSON(http.StatusOK, types.MessageResponse{
@@ -838,6 +880,7 @@ func generateMasterSecret(pollID string) []byte {
 //	@Failure		404	{object}	types.ErrorResponse			"Poll not found"
 //	@Failure		500	{object}	types.ErrorResponse			"Internal server error"
 //	@Router			/api/polls/{id}/reveal [post]
+//
 // TODO: Implement distributed shares automated removal for a revealed poll to not flood the database
 func (h *PollHandler) RevealResultsHandler(ctx *gin.Context) {
 	logger := logging.FromContext(ctx.Request.Context())
@@ -1104,6 +1147,16 @@ func (h *PollHandler) RevealResultsHandler(ctx *gin.Context) {
 		logger.Error("failed to update poll status", "error", err)
 	}
 
+	// Emit WebSocket event for results revealed
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		server.EmitEvent("poll:results-revealed", gin.H{
+			"pollId":     pollIDStr,
+			"message":    "Poll results have been revealed",
+			"pollTitle":  poll.Title,
+			"totalVotes": totalVotes,
+		})
+	}
+
 	ctx.JSON(http.StatusOK, types.PollResultResponse{
 		PollID:     pollID.Hex(),
 		Results:    results,
@@ -1195,26 +1248,26 @@ func bigIntFromHex(hexStr string) *big.Int {
 func decryptBallot(encryptedVote string, masterKey []byte) (string, error) {
 	// Placeholder: Base64 decode the vote
 	// Frontend uses: btoa(JSON.stringify({option_id, voter_id, timestamp}))
-	
+
 	// For now, ignore masterKey (will be used for AES decryption)
 	_ = masterKey
-	
+
 	// Decode base64
 	decoded, err := base64.StdEncoding.DecodeString(encryptedVote)
 	if err != nil {
 		return "", err
 	}
-	
+
 	// Parse JSON to extract option_id
 	var voteData struct {
 		OptionID  string `json:"option_id"`
 		VoterID   string `json:"voter_id"`
 		Timestamp string `json:"timestamp"`
 	}
-	
+
 	if err := json.Unmarshal(decoded, &voteData); err != nil {
 		return "", err
 	}
-	
+
 	return voteData.OptionID, nil
 }

@@ -20,12 +20,13 @@ import (
 
 // BallotHandler handles ballot-related API requests.
 type BallotHandler struct {
-	db *mongo.Client
+	db     *mongo.Client
+	server interface{}
 }
 
 // NewBallotHandler creates a new BallotHandler instance.
-func NewBallotHandler(db *mongo.Client) *BallotHandler {
-	return &BallotHandler{db: db}
+func NewBallotHandler(db *mongo.Client, server interface{}) *BallotHandler {
+	return &BallotHandler{db: db, server: server}
 }
 
 // CastBallotHandler godoc
@@ -339,6 +340,17 @@ func (h *BallotHandler) ContributeShareHandler(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, types.ErrorResponse{Error: "failed to update share"})
 		return
+	}
+
+	// Emit WebSocket event for share contribution
+	if server, ok := h.server.(interface{ EmitEvent(string, interface{}) }); ok {
+		server.EmitEvent("share:contributed", gin.H{
+			"pollId":    req.PollID,
+			"pollTitle": polls[0].Title,
+			"message":   "User contributed their share for poll reveal",
+			"username":  user.Username,
+			"groupName": share.GroupName,
+		})
 	}
 
 	ctx.JSON(http.StatusOK, types.MessageResponse{Message: "share contributed successfully"})

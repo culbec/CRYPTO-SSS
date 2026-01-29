@@ -1,10 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VotingService } from '../../../../core/services/voting.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { PollEventsService } from '../../../../core/services/poll-events.service';
 import { Poll, ShareStatus, ShareDistribution } from '../../../../core/models/poll.model';
 import { MatIconModule } from '@angular/material/icon';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-share-contribution',
@@ -13,11 +16,13 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './share-contribution.component.html',
   styleUrls: ['./share-contribution.component.scss'] 
 })
-export class ShareContributionComponent implements OnInit {
+export class ShareContributionComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private votingService = inject(VotingService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private eventsService = inject(PollEventsService);
+  private destroy$ = new Subject<void>();
 
   poll: Poll | null = null;
   myShare: ShareDistribution | null = null;
@@ -26,6 +31,7 @@ export class ShareContributionComponent implements OnInit {
   resultsRevealed = false;
   error = '';
   currentUsername = '';
+  pollId = '';
 
   showSuccessModal = false;
   successMessage = '';
@@ -34,12 +40,51 @@ export class ShareContributionComponent implements OnInit {
 
   ngOnInit() {
     this.currentUsername = this.authService.user()?.username || '';
-    const pollId = this.route.snapshot.paramMap.get('id');
-    if (pollId) {
-      this.loadPoll(pollId);
-      this.loadShareStatus(pollId);
-      this.loadMyShare(pollId);
+    this.pollId = this.route.snapshot.paramMap.get('id') || '';
+    
+    if (this.pollId) {
+      this.loadPoll(this.pollId);
+      this.loadShareStatus(this.pollId);
+      this.loadMyShare(this.pollId);
+      this.setupRealtimeListeners();
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupRealtimeListeners(): void {
+    // When shares are distributed, reload share status
+    this.eventsService.onSharesDistributed(this.pollId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadShareStatus(this.pollId);
+        this.loadMyShare(this.pollId);
+      });
+
+    // When another user contributes a share, reload share status
+    this.eventsService.onShareContributed(this.pollId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadShareStatus(this.pollId);
+      });
+
+    // When results are revealed, navigate to results page
+    this.eventsService.onResultsRevealed(this.pollId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.resultsRevealed = true;
+        this.navigateToResults();
+      });
+
+    // When poll status changes, reload poll
+    this.eventsService.onPollStatusChanged(this.pollId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((newStatus) => {
+        this.loadPoll(this.pollId);
+      });
   }
 
   loadPoll(pollId: string) {

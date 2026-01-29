@@ -1,9 +1,12 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { VotingService } from '../../../../core/services/voting.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { PollEventsService } from '../../../../core/services/poll-events.service';
 import { Poll, PollOption, BallotResponse } from '../../../../core/models/poll.model';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-voting',
@@ -12,28 +15,45 @@ import { Poll, PollOption, BallotResponse } from '../../../../core/models/poll.m
   templateUrl: './voting.component.html',
   styleUrls: ['./voting.component.scss']
 })
-export class VotingComponent implements OnInit {
+export class VotingComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private votingService = inject(VotingService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private eventsService = inject(PollEventsService);
+  private destroy$ = new Subject<void>();
 
   poll: Poll | null = null;
   selectedOption: PollOption | null = null;
   myBallot: BallotResponse | null = null;
+  pollId = '';
 
   showModal = false;
   modalType: 'success' | 'error' = 'success';
   modalTitle = '';
   modalMessage = '';
 
-
   ngOnInit() {
-    const pollId = this.route.snapshot.paramMap.get('id');
-    if (pollId) {
-      this.loadPoll(pollId);
-      this.checkExistingBallot(pollId);
+    this.pollId = this.route.snapshot.paramMap.get('id') || '';
+    if (this.pollId) {
+      this.loadPoll(this.pollId);
+      this.checkExistingBallot(this.pollId);
+      this.setupRealtimeListeners();
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupRealtimeListeners(): void {
+    // If poll status changes while viewing, reload the poll
+    this.eventsService.onPollStatusChanged(this.pollId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadPoll(this.pollId);
+      });
   }
 
   loadPoll(pollId: string) {

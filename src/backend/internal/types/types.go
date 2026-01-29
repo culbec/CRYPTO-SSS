@@ -102,16 +102,16 @@ type EncryptedBallot struct {
 
 // SecretShare represents a share of the poll encryption key held by a participant.
 type SecretShare struct {
-	ID           ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
-	PollID       ObjectId `json:"poll_id" bson:"poll_id"`
-	HolderID     ObjectId `json:"holder_id" bson:"holder_id"`
-	GroupName    string   `json:"group_name" bson:"group_name"`
-	ShareIndex   int      `json:"share_index" bson:"share_index"`
-	ShareValue   string   `json:"share_value" bson:"share_value"`
-	Commitment   string   `json:"commitment" bson:"commitment"`
-	IsContributed bool    `json:"is_contributed" bson:"is_contributed"`
-	CreatedAt    string   `json:"created_at" bson:"created_at"`
-	Version      int      `json:"version" bson:"version"`
+	ID            ObjectId `json:"_id,omitempty" bson:"_id,omitempty"`
+	PollID        ObjectId `json:"poll_id" bson:"poll_id"`
+	HolderID      ObjectId `json:"holder_id" bson:"holder_id"`
+	GroupName     string   `json:"group_name" bson:"group_name"`
+	ShareIndex    int      `json:"share_index" bson:"share_index"`
+	ShareValue    string   `json:"share_value" bson:"share_value"`
+	Commitment    string   `json:"commitment" bson:"commitment"`
+	IsContributed bool     `json:"is_contributed" bson:"is_contributed"`
+	CreatedAt     string   `json:"created_at" bson:"created_at"`
+	Version       int      `json:"version" bson:"version"`
 }
 
 // PollResult represents the revealed results of a poll.
@@ -193,10 +193,10 @@ type SSSTestRequest struct {
 
 // AuthResponse represents the response for successful authentication.
 type AuthResponse struct {
-	UserID string   `json:"user_id" example:"507f1f77bcf86cd799439011"`
-	Token  string   `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
-	Role   UserRole `json:"role" example:"voter"`
-	Username string `json:"username" example:"johndoe"`
+	UserID   string   `json:"user_id" example:"507f1f77bcf86cd799439011"`
+	Token    string   `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
+	Role     UserRole `json:"role" example:"voter"`
+	Username string   `json:"username" example:"johndoe"`
 }
 
 // ErrorResponse represents an error response.
@@ -291,11 +291,11 @@ type UserResponse struct {
 
 // ShareStatusResponse represents the status of share collection for a poll.
 type ShareStatusResponse struct {
-	PollID               string `json:"poll_id" example:"507f1f77bcf86cd799439011"`
-	AuditorShares        int    `json:"auditor_shares" example:"1"`
-	MinAuditorsRequired  int    `json:"min_auditors_required" example:"1"`
-	OfficialShares       int    `json:"official_shares" example:"2"`
-	MinOfficialsRequired int    `json:"min_officials_required" example:"2"`
-	CanReveal            bool   `json:"can_reveal" example:"true"`
+	PollID               string   `json:"poll_id" example:"507f1f77bcf86cd799439011"`
+	AuditorShares        int      `json:"auditor_shares" example:"1"`
+	MinAuditorsRequired  int      `json:"min_auditors_required" example:"1"`
+	OfficialShares       int      `json:"official_shares" example:"2"`
+	MinOfficialsRequired int      `json:"min_officials_required" example:"2"`
+	CanReveal            bool     `json:"can_reveal" example:"true"`
 	ContributedBy        []string `json:"contributed_by"`
 }

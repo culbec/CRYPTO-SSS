@@ -61,16 +61,33 @@
           <!-- Winner -->
           <div class="winner-section">
             <h2><mat-icon class="winner-icon">emoji_events</mat-icon> Winner</h2>
-            <div class="winner-card" *ngIf="getWinnerOption(); else tieResult">
+            
+            <!-- Single Winner -->
+            <div class="winner-card" *ngIf="!isTie(); else tieResult">
               <mat-icon class="winner-trophy">emoji_events</mat-icon>
               <p class="winner-name">{{ getWinnerOption()?.label }}</p>
               <p class="winner-votes">{{ getMaxVotes() }} votes ({{ getWinnerPercentage() | number:'1.1-1' }}%)</p>
             </div>
+            
+            <!-- Tie Result -->
             <ng-template #tieResult>
-              <div class="winner-card">
-                <mat-icon class="tie-icon">balance</mat-icon>
-                <p class="winner-name">TIE</p>
-                <p class="winner-votes">Multiple options tied at {{ getMaxVotes() }} votes</p>
+              <div class="tie-card">
+                <div class="tie-header">
+                  <mat-icon class="tie-icon">balance</mat-icon>
+                  <h3 class="tie-title">It's a Tie!</h3>
+                </div>
+                <p class="tie-description">Multiple options tied with the highest votes</p>
+                <div class="tied-options">
+                  <div *ngFor="let option of poll?.options" class="tied-option" 
+                       [class.is-tied]="getVoteCount(option.id) === getMaxVotes()">
+                    <ng-container *ngIf="getVoteCount(option.id) === getMaxVotes()">
+                      <mat-icon class="trophy-small">emoji_events</mat-icon>
+                      <span class="option-name">{{ option.label }}</span>
+                      <span class="option-votes">{{ getMaxVotes() }} votes</span>
+                    </ng-container>
+                  </div>
+                </div>
+                <p class="tie-percentage">Each received {{ getWinnerPercentage() | number:'1.1-1' }}% of votes</p>
               </div>
             </ng-template>
           </div>

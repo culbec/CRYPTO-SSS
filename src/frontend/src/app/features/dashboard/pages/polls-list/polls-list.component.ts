@@ -2,10 +2,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Poll, ShareStatus, POLL_STATUS_LABELS } from '../../../../core/models/poll.model';
+import { Poll, ShareStatus } from '../../../../core/models/poll.model';
 import { AuthService } from '../../../../core/services/auth.service';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { PollEventsService } from '../../../../core/services/poll-events.service';
+import { forkJoin, of, Subject } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-polls-list',
@@ -18,9 +19,10 @@ export class PollsListComponent implements OnInit {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private eventsService = inject(PollEventsService);
   // TODO: move API-related calls to separate service classes
-  // TODO: check if status for contributed shares of closed polls is updated correctly on poll cards
   private readonly baseUrl = 'http://localhost:3000/api';
+  private destroy$ = new Subject<void>();
 
   polls: Poll[] = [];
   filteredPolls: Poll[] = [];
@@ -29,6 +31,40 @@ export class PollsListComponent implements OnInit {
 
   ngOnInit() {
     this.loadPolls();
+    this.setupRealtimeListeners();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupRealtimeListeners(): void {
+    this.eventsService.pollCreated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadPolls();
+      });
+
+    // When a poll status changes, reload the polls list
+    this.eventsService.pollStatusChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadPolls();
+      });
+
+    // When shares are distributed or a share is contributed, reload share statuses
+    this.eventsService.sharesDistributed$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadShareStatusesForClosedPolls();
+      });
+
+    this.eventsService.shareContributed$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadShareStatusesForClosedPolls();
+      });
   }
 
   loadPolls() {

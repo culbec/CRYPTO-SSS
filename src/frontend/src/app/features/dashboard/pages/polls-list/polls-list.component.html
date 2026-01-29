@@ -13,6 +13,10 @@
                 (click)="filterByStatus('all')">
           All Polls
         </button>
+        <button [class.active]="selectedStatus === 'draft'" 
+                (click)="filterByStatus('draft')">
+          Draft
+        </button>
         <button [class.active]="selectedStatus === 'open'" 
                 (click)="filterByStatus('open')">
           Open

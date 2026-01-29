@@ -308,6 +308,16 @@
 .btn-primary {
   background-color: #3498db;
   color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
 
   &:hover:not(:disabled) {
     background-color: #2980b9;
@@ -351,4 +361,25 @@
   font-weight: 700;
   letter-spacing: 1px;
   color: #666;
+}
+
+.permission-warning {
+  margin: 0.75rem 0 0 0;
+  padding: 0.75rem;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .warning-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+  }
 }

@@ -42,16 +42,19 @@ func (s *Server) setupRoutes() {
 	s.registerAuthRoutes(authHandler)
 
 	// Poll handlers
-	pollHandler := poll.NewPollHandler(s.dbClient)
+	pollHandler := poll.NewPollHandler(s.dbClient, s)
 	s.registerPollRoutes(pollHandler, authHandler)
 
 	// Ballot handlers
-	ballotHandler := ballot.NewBallotHandler(s.dbClient)
+	ballotHandler := ballot.NewBallotHandler(s.dbClient, s)
 	s.registerBallotRoutes(ballotHandler, authHandler)
 
 	// Admin handlers
 	adminHandler := admin.NewAdminHandler(s.dbClient)
 	s.registerAdminRoutes(adminHandler, authHandler)
+
+	// WebSocket endpoint (requires authentication)
+	s.registerWebSocket(authHandler)
 
 	logger.Info("Handlers prepared!")
 }
@@ -67,12 +70,12 @@ func (s *Server) setupSwagger() {
 	if port == "" {
 		port = "3000"
 	}
-	
+
 	// For 0.0.0.0, use localhost in Swagger docs
 	if host == "0.0.0.0" {
 		host = "localhost"
 	}
-	
+
 	docs.SwaggerInfo.Host = host + ":" + port
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
